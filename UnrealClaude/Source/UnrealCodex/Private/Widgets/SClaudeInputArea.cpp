@@ -62,7 +62,7 @@ void SClaudeInputArea::Construct(const FArguments& InArgs)
 					+ SScrollBox::Slot()
 					[
 						SAssignNew(InputTextBox, SMultiLineEditableTextBox)
-						.HintText(LOCTEXT("InputHint", "Ask Claude about Unreal Engine 5.7... (Shift+Enter for newline)"))
+						.HintText(LOCTEXT("InputHint", "Ask Codex about Unreal Engine 5.7... (Shift+Enter for newline)"))
 						.AutoWrapText(true)
 						.AllowMultiLine(true)
 						.OnTextChanged(this, &SClaudeInputArea::HandleTextChanged)

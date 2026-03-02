@@ -9,11 +9,11 @@
 #include "HAL/PlatformProcess.h"
 
 /**
- * Async runner for Claude Code CLI commands (cross-platform implementation)
- * Executes 'claude -p' in print mode and captures output
+ * Async runner for Codex-first CLI commands (cross-platform implementation)
+ * Executes non-interactive CLI requests and captures output
  * Implements IClaudeRunner interface for abstraction
  */
-class UNREALCLAUDE_API FClaudeCodeRunner : public IClaudeRunner, public FRunnable
+class UNREALCODEX_API FClaudeCodeRunner : public IClaudeRunner, public FRunnable
 {
 public:
 	FClaudeCodeRunner();
@@ -31,10 +31,10 @@ public:
 	virtual bool IsExecuting() const override { return bIsExecuting; }
 	virtual bool IsAvailable() const override { return IsClaudeAvailable(); }
 
-	/** Check if Claude CLI is available on this system (static for backward compatibility) */
+	/** Check if Codex/Claude runtime CLI is available on this system */
 	static bool IsClaudeAvailable();
 
-	/** Get the Claude CLI path */
+	/** Get the runtime CLI path (Codex-first) */
 	static FString GetClaudePath();
 
 	// FRunnable interface

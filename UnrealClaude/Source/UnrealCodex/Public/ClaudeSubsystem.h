@@ -13,7 +13,7 @@ class FClaudeCodeRunner;
  * Options for sending a prompt to Claude
  * Reduces parameter count in SendPrompt method
  */
-struct UNREALCLAUDE_API FClaudePromptOptions
+struct UNREALCODEX_API FClaudePromptOptions
 {
 	/** Include UE5.7 engine context in system prompt */
 	bool bIncludeEngineContext = true;
@@ -44,7 +44,7 @@ struct UNREALCLAUDE_API FClaudePromptOptions
  * Subsystem for managing Claude Code interactions
  * Orchestrates runner, session management, and prompt building
  */
-class UNREALCLAUDE_API FClaudeCodeSubsystem
+class UNREALCODEX_API FClaudeCodeSubsystem
 {
 public:
 	static FClaudeCodeSubsystem& Get();

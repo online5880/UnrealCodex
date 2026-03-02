@@ -13,7 +13,7 @@
  * - Persistent history log
  * - Auto-retry on build failure
  */
-class UNREALCLAUDE_API FScriptExecutionManager
+class UNREALCODEX_API FScriptExecutionManager
 {
 public:
 	/** Get singleton instance */

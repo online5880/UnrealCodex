@@ -1,26 +1,27 @@
-# UnrealClaude - Claude Code Instructions for Unreal Engine 5.7
+# UnrealCodex - Codex Instructions for Unreal Engine 5.7
 
-This file provides guidance to Claude Code when working with the UnrealClaude plugin and Unreal Engine 5.7 projects.
+This file provides guidance for Codex when working with the UnrealCodex plugin and Unreal Engine 5.7 projects.
 
 ## Setup
 
 Copy this file to `CLAUDE.md` in the same directory and customize the build paths for your system.
+`CLAUDE.md` remains the runtime-loaded filename for compatibility.
 
 ## Project Overview
 
-**UnrealClaude** is an Unreal Engine 5.7 plugin that provides MCP (Model Context Protocol) integration, enabling Claude AI to interact directly with the Unreal Editor via REST API tools.
+**UnrealCodex** is an Unreal Engine 5.7 plugin that provides MCP (Model Context Protocol) integration, enabling Codex to interact directly with the Unreal Editor via REST API tools.
 
 ### Key Directories
-- `Source/UnrealClaude/Private/MCP/` - MCP server and tool implementations
-- `Source/UnrealClaude/Private/MCP/Tools/` - Individual MCP tools
-- `Source/UnrealClaude/Private/Tests/` - Automation tests
+- `Source/UnrealCodex/Private/MCP/` - MCP server and tool implementations
+- `Source/UnrealCodex/Private/MCP/Tools/` - Individual MCP tools
+- `Source/UnrealCodex/Private/Tests/` - Automation tests
 - `Resources/mcp-bridge/` - Node.js MCP bridge
 
 ### Build Commands
 ```bash
 # Build plugin - customize these paths for your system:
 # - UE_PATH: Your Unreal Engine installation
-# - PLUGIN_PATH: Path to UnrealClaude.uplugin
+# - PLUGIN_PATH: Path to UnrealClaude.uplugin (descriptor name kept for compatibility)
 # - OUTPUT_PATH: Temporary build output directory
 
 "<UE_PATH>/Engine/Build/BatchFiles/RunUAT.bat" BuildPlugin -Plugin="<PLUGIN_PATH>/UnrealClaude.uplugin" -Package="<OUTPUT_PATH>" -TargetPlatforms=Win64 -Rocket
@@ -139,7 +140,7 @@ Resources/mcp-bridge/contexts/
 
 1. Create `Resources/mcp-bridge/contexts/newcategory.md`
 2. Add entry to `CONTEXT_CONFIG` in `context-loader.js`
-3. Update CLAUDE.md and README.md
+3. Update CLAUDE.md/CODEX.md and README files
 
 ### Context Accuracy Guidelines
 
@@ -149,7 +150,7 @@ Resources/mcp-bridge/contexts/
 
 ### UE 5.7 Engine Source Reference (Optional)
 
-If you have access to the EpicGames GitHub organization, you can clone the engine source locally for Claude Code to use as an authoritative API reference. This is far more accurate than web search for verifying function signatures, includes, and specifiers.
+If you have access to the EpicGames GitHub organization, you can clone the engine source locally for Codex to use as an authoritative API reference. This is far more accurate than web search for verifying function signatures, includes, and specifiers.
 
 **Setup** (sparse + shallow clone, ~2-5 GB instead of 30+ GB):
 ```bash
@@ -202,6 +203,8 @@ bool FMyTest::RunTest(const FString& Parameters)
 ```
 
 ### Test Categories
+
+Note: test namespace strings currently remain `UnrealClaude.*` for backward compatibility.
 - `UnrealClaude.MCP.Tools.*` - Individual tool tests
 - `UnrealClaude.MCP.ParamValidator.*` - Parameter validation tests
 - `UnrealClaude.MCP.Registry.*` - Tool registry tests

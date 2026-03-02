@@ -1,6 +1,6 @@
-# UnrealClaude MCP Bridge
+# UnrealCodex MCP Bridge
 
-This bridges Claude Code to the UnrealClaude plugin's HTTP server, allowing Claude to directly manipulate the Unreal Editor.
+This bridges OpenAI Codex CLI to the UnrealClaude plugin's HTTP server, allowing Codex to directly manipulate the Unreal Editor.
 
 ## Setup
 
@@ -11,23 +11,20 @@ cd Resources/mcp-bridge
 npm install
 ```
 
-### 2. Add to Claude Code settings
+### 2. Add to Codex CLI config
 
-Add to your `~/.claude/settings.json` or project `.claude/settings.json`:
+Add this to `~/.codex/config.toml` (or your active Codex profile):
 
-```json
-{
-  "mcpServers": {
-    "unrealclaude": {
-      "command": "node",
-      "args": ["/path/to/UnrealClaude/Resources/mcp-bridge/index.js"],
-      "env": {
-        "UNREAL_MCP_URL": "http://localhost:3000"
-      }
-    }
-  }
-}
+```toml
+[mcp_servers.unrealcodex]
+command = "node"
+args = ["/path/to/UnrealClaude/Resources/mcp-bridge/index.js"]
+
+[mcp_servers.unrealcodex.env]
+UNREAL_MCP_URL = "http://localhost:3000"
 ```
+
+For backward compatibility, you can also keep the server ID as `unrealclaude`; both IDs point to the same bridge command.
 
 ### 3. Start Unreal Editor
 
@@ -329,19 +326,14 @@ The bridge includes a dynamic context loader that provides accurate UE 5.7 API d
 
 Enable automatic context injection by setting the environment variable:
 
-```json
-{
-  "mcpServers": {
-    "unrealclaude": {
-      "command": "node",
-      "args": ["/path/to/mcp-bridge/index.js"],
-      "env": {
-        "UNREAL_MCP_URL": "http://localhost:3000",
-        "INJECT_CONTEXT": "true"
-      }
-    }
-  }
-}
+```toml
+[mcp_servers.unrealcodex]
+command = "node"
+args = ["/path/to/mcp-bridge/index.js"]
+
+[mcp_servers.unrealcodex.env]
+UNREAL_MCP_URL = "http://localhost:3000"
+INJECT_CONTEXT = "true"
 ```
 
 When enabled, relevant UE 5.7 context will be automatically appended to tool responses based on the tool being used.

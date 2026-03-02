@@ -94,7 +94,7 @@ TSharedRef<SVerticalBox> FScriptPermissionDialog::BuildHeaderSection(
 		.Padding(10)
 		[
 			SNew(STextBlock)
-			.Text(FText::FromString(TEXT("⚠️ Claude wants to execute a script. Review the code below:")))
+			.Text(FText::FromString(TEXT("⚠️ Codex wants to execute a script. Review the code below:")))
 			.Font(FCoreStyle::GetDefaultFontStyle("Bold", 12))
 		]
 		// Description

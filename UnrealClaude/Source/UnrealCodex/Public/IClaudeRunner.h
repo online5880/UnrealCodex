@@ -34,7 +34,7 @@ enum class EClaudeStreamEventType : uint8
  * Structured event parsed from Claude CLI stream-json NDJSON output.
  * Each NDJSON line becomes one of these events.
  */
-struct UNREALCLAUDE_API FClaudeStreamEvent
+struct UNREALCODEX_API FClaudeStreamEvent
 {
 	/** Event type */
 	EClaudeStreamEventType Type = EClaudeStreamEventType::Unknown;
@@ -80,32 +80,32 @@ struct UNREALCLAUDE_API FClaudeStreamEvent
 DECLARE_DELEGATE_OneParam(FOnClaudeStreamEvent, const FClaudeStreamEvent& /*Event*/);
 
 /**
- * Configuration for Claude Code CLI execution
+ * Configuration for AI CLI execution (Codex-first runtime)
  */
-struct UNREALCLAUDE_API FClaudeRequestConfig
+struct UNREALCODEX_API FClaudeRequestConfig
 {
-	/** The prompt to send to Claude */
+	/** The prompt to send to the runtime */
 	FString Prompt;
 
 	/** Optional system prompt to append (for UE5.7 context) */
 	FString SystemPrompt;
 
-	/** Working directory for Claude (usually project root) */
+	/** Working directory for the runtime process (usually project root) */
 	FString WorkingDirectory;
 
 	/** Use JSON output format for structured responses */
 	bool bUseJsonOutput = false;
 
-	/** Skip permission prompts (--dangerously-skip-permissions) */
+	/** Skip permission prompts (mapped to runtime-specific flags) */
 	bool bSkipPermissions = true;
 
 	/** Timeout in seconds (0 = no timeout) */
 	float TimeoutSeconds = 300.0f;
 
-	/** Allow Claude to use tools (Read, Write, Bash, etc.) */
+	/** Optional tool policy values consumed by the active runtime */
 	TArray<FString> AllowedTools;
 
-	/** Optional paths to attached clipboard images (PNG) for Claude to read */
+	/** Optional paths to attached clipboard images (PNG) */
 	TArray<FString> AttachedImagePaths;
 
 	/** Optional callback for structured NDJSON stream events */
@@ -113,10 +113,10 @@ struct UNREALCLAUDE_API FClaudeRequestConfig
 };
 
 /**
- * Abstract interface for Claude Code CLI runners
+ * Abstract interface for Codex/Claude CLI runners
  * Allows for different implementations (real, mock, cached, etc.)
  */
-class UNREALCLAUDE_API IClaudeRunner
+class UNREALCODEX_API IClaudeRunner
 {
 public:
 	virtual ~IClaudeRunner() = default;

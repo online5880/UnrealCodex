@@ -46,14 +46,14 @@ void SChatMessage::Construct(const FArguments& InArgs)
 	// Accent bar color (left edge indicator like CLI prompt markers)
 	FLinearColor AccentColor = bIsUser
 		? FLinearColor(0.3f, 0.5f, 0.9f, 1.0f)   // Blue accent for user
-		: FLinearColor(0.6f, 0.4f, 0.2f, 1.0f);   // Warm orange accent for Claude
+		: FLinearColor(0.6f, 0.4f, 0.2f, 1.0f);   // Warm orange accent for Codex
 
 	FLinearColor TextColor = FLinearColor::White;
 	FLinearColor RoleLabelColor = bIsUser
 		? FLinearColor(0.4f, 0.6f, 1.0f)   // Light blue
 		: FLinearColor(0.9f, 0.6f, 0.3f);  // Warm orange
 
-	FString RoleLabel = bIsUser ? TEXT("> You") : TEXT("Claude");
+	FString RoleLabel = bIsUser ? TEXT("> You") : TEXT("Codex");
 
 	ChildSlot
 	[
@@ -163,14 +163,14 @@ void SClaudeEditorWidget::Construct(const FArguments& InArgs)
 		]
 	];
 	
-	// Check Claude availability on startup
+	// Check Codex availability on startup
 	if (!IsClaudeAvailable())
 	{
-		AddMessage(TEXT("⚠️ Claude CLI not found.\n\nPlease install Claude Code:\n  npm install -g @anthropic-ai/claude-code\n\nThen authenticate:\n  claude auth login"), false);
+		AddMessage(TEXT("⚠️ Codex CLI not found.\n\nPlease install Codex:\n  npm i -g @openai/codex\n\nThen authenticate:\n  codex login"), false);
 	}
 	else
 	{
-		FString WelcomeMessage = TEXT("👋 Welcome to Unreal Claude!\n\nI'm ready to help with your UE5.7 project. Ask me about:\n• C++ code patterns and best practices\n• Blueprint integration\n• Engine systems (Nanite, Lumen, GAS, etc.)\n• Debugging and optimization\n\n");
+		FString WelcomeMessage = TEXT("👋 Welcome to Unreal Codex!\n\nI'm ready to help with your UE5.7 project. Ask me about:\n• C++ code patterns and best practices\n• Blueprint integration\n• Engine systems (Nanite, Lumen, GAS, etc.)\n• Debugging and optimization\n\n");
 
 		// Add MCP tool status
 		WelcomeMessage += GenerateMCPStatusMessage();
@@ -315,7 +315,7 @@ void SClaudeEditorWidget::SendMessage()
 
 	if (!IsClaudeAvailable())
 	{
-		AddMessage(TEXT("Claude CLI is not available. Please install it first."), false);
+		AddMessage(TEXT("Codex CLI is not available. Please install it first."), false);
 		return;
 	}
 
@@ -367,7 +367,7 @@ void SClaudeEditorWidget::SendMessage()
 	// Start streaming response display
 	StartStreamingResponse();
 
-	// Send to Claude using FClaudePromptOptions
+	// Send to Codex using FClaudePromptOptions
 	FOnClaudeResponse OnComplete;
 	OnComplete.BindSP(this, &SClaudeEditorWidget::OnClaudeResponse);
 
@@ -519,7 +519,7 @@ FText SClaudeEditorWidget::GetStatusText() const
 	if (bIsWaitingForResponse)
 	{
 		double ElapsedSec = FPlatformTime::Seconds() - StreamingStartTime;
-		FString StatusStr = FString::Printf(TEXT("● Claude is thinking... %.1fs"), ElapsedSec);
+		FString StatusStr = FString::Printf(TEXT("● Codex is thinking... %.1fs"), ElapsedSec);
 
 		if (StreamingToolCallCount > 0)
 		{
@@ -532,7 +532,7 @@ FText SClaudeEditorWidget::GetStatusText() const
 
 	if (!IsClaudeAvailable())
 	{
-		return LOCTEXT("StatusUnavailable", "● Claude CLI not found");
+		return LOCTEXT("StatusUnavailable", "● Codex CLI not found");
 	}
 
 	if (!LastResultStats.IsEmpty())
@@ -617,7 +617,7 @@ void SClaudeEditorWidget::StartStreamingResponse()
 		.Padding(0, 0, 0, 6)
 		[
 			SNew(STextBlock)
-			.Text(FText::FromString(TEXT("Claude")))
+			.Text(FText::FromString(TEXT("Codex")))
 			.TextStyle(FAppStyle::Get(), "SmallText")
 			.ColorAndOpacity(FSlateColor(FLinearColor(0.9f, 0.6f, 0.3f)))
 		]
@@ -648,7 +648,7 @@ void SClaudeEditorWidget::StartStreamingResponse()
 		[
 			SNew(SHorizontalBox)
 
-			// Left accent bar (orange for Claude)
+			// Left accent bar (orange for Codex)
 			+ SHorizontalBox::Slot()
 			.AutoWidth()
 			[

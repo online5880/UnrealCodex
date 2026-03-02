@@ -29,7 +29,7 @@ static const FName ClaudeTabName("ClaudeAssistant");
 
 void FUnrealClaudeModule::StartupModule()
 {
-	UE_LOG(LogUnrealClaude, Warning, TEXT("=== UnrealClaude BUILD 20260107-1450 THREAD_TESTS_DISABLED ==="));
+	UE_LOG(LogUnrealClaude, Warning, TEXT("=== UnrealCodex BUILD 20260107-1450 THREAD_TESTS_DISABLED ==="));
 	
 	// Register commands
 	FUnrealClaudeCommands::Register();
@@ -53,7 +53,7 @@ void FUnrealClaudeModule::StartupModule()
 		{
 			// Create a simple input dialog
 			TSharedRef<SWindow> QuickAskWindow = SNew(SWindow)
-				.Title(LOCTEXT("QuickAskTitle", "Quick Ask Claude"))
+				.Title(LOCTEXT("QuickAskTitle", "Quick Ask Codex"))
 				.ClientSize(FVector2D(500, 100))
 				.SupportsMinimize(false)
 				.SupportsMaximize(false);
@@ -67,7 +67,7 @@ void FUnrealClaudeModule::StartupModule()
 				.AutoHeight()
 				[
 					SNew(STextBlock)
-					.Text(LOCTEXT("QuickAskLabel", "Ask Claude a quick question:"))
+					.Text(LOCTEXT("QuickAskLabel", "Ask Codex a quick question:"))
 				]
 				+ SVerticalBox::Slot()
 				.Padding(10, 0, 10, 10)
@@ -82,7 +82,7 @@ void FUnrealClaudeModule::StartupModule()
 							// Close the window
 							QuickAskWindow->RequestDestroyWindow();
 
-							// Send prompt to Claude
+							// Send prompt to Codex runtime
 							FString Prompt = Text.ToString();
 							FClaudePromptOptions Options;
 							Options.bIncludeEngineContext = true;
@@ -129,13 +129,13 @@ void FUnrealClaudeModule::StartupModule()
 		{
 			return SNew(SDockTab)
 				.TabRole(ETabRole::NomadTab)
-				.Label(LOCTEXT("ClaudeTabTitle", "Claude Assistant"))
+				.Label(LOCTEXT("ClaudeTabTitle", "Codex Assistant"))
 				[
 					SNew(SClaudeEditorWidget)
 				];
 		}))
-		.SetDisplayName(LOCTEXT("ClaudeTabTitle", "Claude Assistant"))
-		.SetTooltipText(LOCTEXT("ClaudeTabTooltip", "Open the Claude AI Assistant for UE5.7 development help"))
+		.SetDisplayName(LOCTEXT("ClaudeTabTitle", "Codex Assistant"))
+		.SetTooltipText(LOCTEXT("ClaudeTabTooltip", "Open the Codex AI Assistant for UE5.7 development help"))
 		.SetGroup(WorkspaceMenu::GetMenuStructure().GetToolsCategory())
 		.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Help"));
 	
@@ -146,14 +146,14 @@ void FUnrealClaudeModule::StartupModule()
 	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
 	LevelEditorModule.GetGlobalLevelEditorActions()->Append(PluginCommands.ToSharedRef());
 
-	// Check Claude availability
+	// Check Codex runtime availability
 	if (FClaudeCodeRunner::IsClaudeAvailable())
 	{
-		UE_LOG(LogUnrealClaude, Log, TEXT("Claude CLI found at: %s"), *FClaudeCodeRunner::GetClaudePath());
+		UE_LOG(LogUnrealClaude, Log, TEXT("Codex runtime found at: %s"), *FClaudeCodeRunner::GetClaudePath());
 	}
 	else
 	{
-		UE_LOG(LogUnrealClaude, Warning, TEXT("Claude CLI not found. Please install with: npm install -g @anthropic-ai/claude-code"));
+		UE_LOG(LogUnrealClaude, Warning, TEXT("Codex CLI not found. Install with: npm i -g @openai/codex"));
 	}
 
 	// Start MCP Server
@@ -168,7 +168,7 @@ void FUnrealClaudeModule::StartupModule()
 
 void FUnrealClaudeModule::ShutdownModule()
 {
-	UE_LOG(LogUnrealClaude, Log, TEXT("UnrealClaude module shutting down"));
+	UE_LOG(LogUnrealClaude, Log, TEXT("UnrealCodex module shutting down"));
 
 	// Stop MCP Server
 	StopMCPServer();
@@ -183,12 +183,12 @@ void FUnrealClaudeModule::ShutdownModule()
 
 FUnrealClaudeModule& FUnrealClaudeModule::Get()
 {
-	return FModuleManager::LoadModuleChecked<FUnrealClaudeModule>("UnrealClaude");
+	return FModuleManager::LoadModuleChecked<FUnrealClaudeModule>("UnrealCodex");
 }
 
 bool FUnrealClaudeModule::IsAvailable()
 {
-	return FModuleManager::Get().IsModuleLoaded("UnrealClaude");
+	return FModuleManager::Get().IsModuleLoaded("UnrealCodex");
 }
 
 void FUnrealClaudeModule::RegisterMenus()
@@ -204,16 +204,16 @@ void FUnrealClaudeModule::RegisterMenus()
 		Section.AddMenuEntryWithCommandList(
 			FUnrealClaudeCommands::Get().OpenClaudePanel,
 			PluginCommands,
-			LOCTEXT("OpenClaudeMenuItem", "Claude Assistant"),
-			LOCTEXT("OpenClaudeMenuItemTooltip", "Open the Claude AI Assistant for UE5.7 help (Ctrl+Shift+C)"),
+			LOCTEXT("OpenClaudeMenuItem", "Codex Assistant"),
+			LOCTEXT("OpenClaudeMenuItemTooltip", "Open the Codex AI Assistant for UE5.7 help (Ctrl+Shift+C)"),
 			FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Help")
 		);
 
 		Section.AddMenuEntryWithCommandList(
 			FUnrealClaudeCommands::Get().QuickAsk,
 			PluginCommands,
-			LOCTEXT("QuickAskMenuItem", "Quick Ask Claude"),
-			LOCTEXT("QuickAskMenuItemTooltip", "Quickly ask Claude a question (Ctrl+Alt+C)"),
+			LOCTEXT("QuickAskMenuItem", "Quick Ask Codex"),
+			LOCTEXT("QuickAskMenuItemTooltip", "Quickly ask Codex a question (Ctrl+Alt+C)"),
 			FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Help")
 		);
 	}
@@ -225,8 +225,8 @@ void FUnrealClaudeModule::RegisterMenus()
 		
 		Section.AddEntry(FToolMenuEntry::InitToolBarButton(
 			FUnrealClaudeCommands::Get().OpenClaudePanel,
-			LOCTEXT("ClaudeToolbarButton", "Claude"),
-			LOCTEXT("ClaudeToolbarTooltip", "Open Claude Assistant (Ctrl+Shift+C)"),
+			LOCTEXT("ClaudeToolbarButton", "Codex"),
+			LOCTEXT("ClaudeToolbarTooltip", "Open Codex Assistant (Ctrl+Shift+C)"),
 			FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Help")
 		));
 	}
@@ -266,4 +266,4 @@ void FUnrealClaudeModule::StopMCPServer()
 
 #undef LOCTEXT_NAMESPACE
 
-IMPLEMENT_MODULE(FUnrealClaudeModule, UnrealClaude)
+IMPLEMENT_MODULE(FUnrealClaudeModule, UnrealCodex)
