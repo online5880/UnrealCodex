@@ -7,7 +7,7 @@
 
 /**
  * MCP Tool for cleaning up generated scripts and history
- * Use before pushing to production to remove all Claude-generated scripts
+	 * Use before pushing to production to remove all Codex-generated scripts
  */
 class FMCPTool_CleanupScripts : public FMCPToolBase
 {
@@ -17,14 +17,14 @@ public:
 		FMCPToolInfo Info;
 		Info.Name = TEXT("cleanup_scripts");
 		Info.Description = TEXT(
-			"Remove all Claude-generated scripts and clear execution history.\n\n"
+			"Remove all Codex-generated scripts and clear execution history.\n\n"
 			"WARNING: This is a destructive operation that permanently deletes generated script files.\n\n"
 			"Use this to:\n"
 			"- Clean up before committing to version control\n"
 			"- Remove temporary scripts after debugging\n"
 			"- Reset script history for a fresh session\n\n"
 			"Affected locations:\n"
-			"- Generated C++ scripts in Source/UnrealClaude/Generated/\n"
+			"- Generated C++ scripts in Source/UnrealCodex/Generated/\n"
 			"- Script execution history records\n\n"
 			"Returns: Count of deleted files and cleared history entries."
 		);

@@ -8,16 +8,16 @@ void FUnrealClaudeCommands::RegisterCommands()
 {
 	UI_COMMAND(
 		OpenClaudePanel,
-		"Claude Assistant",
-		"Open the Claude AI Assistant panel for UE5.7 help",
+		"Codex Assistant",
+		"Open the Codex AI Assistant panel for UE5.7 help",
 		EUserInterfaceActionType::Button,
 		FInputChord()
 	);
 
 	UI_COMMAND(
 		QuickAsk,
-		"Quick Ask Claude",
-		"Quickly ask Claude a question",
+		"Quick Ask Codex",
+		"Quickly ask Codex a question",
 		EUserInterfaceActionType::Button,
 		FInputChord()
 	);

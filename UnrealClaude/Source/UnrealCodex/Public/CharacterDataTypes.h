@@ -12,7 +12,7 @@
  * Used with UDataTable for configurable character attributes
  */
 USTRUCT(BlueprintType)
-struct UNREALCLAUDE_API FCharacterStatsRow : public FTableRowBase
+struct UNREALCODEX_API FCharacterStatsRow : public FTableRowBase
 {
 	GENERATED_BODY()
 
@@ -80,7 +80,7 @@ struct UNREALCLAUDE_API FCharacterStatsRow : public FTableRowBase
  * Contains base stats, mesh/animation references, and gameplay settings
  */
 UCLASS(BlueprintType)
-class UNREALCLAUDE_API UCharacterConfigDataAsset : public UDataAsset
+class UNREALCODEX_API UCharacterConfigDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 

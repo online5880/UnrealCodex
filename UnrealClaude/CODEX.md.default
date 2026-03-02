@@ -1,0 +1,16 @@
+# UnrealCodex - Codex Instructions for Unreal Engine 5.7
+
+This is a Codex-branded template for project guidance.
+
+## Important
+
+- Runtime context loading in this plugin currently reads `CLAUDE.md` for compatibility.
+- Use this file as a template, then copy to `CLAUDE.md` in your project/plugin root.
+
+## Quick Setup
+
+1. Copy `CODEX.md.default` to `CLAUDE.md`
+2. Fill in your local paths and project rules
+3. Keep it concise and project-specific
+
+For the full guidance template, use `CLAUDE.md.default` in the same directory.

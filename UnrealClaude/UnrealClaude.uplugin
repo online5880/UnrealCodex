@@ -2,14 +2,14 @@
 	"FileVersion": 3,
 	"Version": 6,
 	"VersionName": "1.4.0",
-	"FriendlyName": "Unreal Claude",
-	"Description": "Claude Code CLI integration for Unreal Engine 5.7. Get AI coding assistance with built-in UE5.7 documentation context directly in the editor.",
+	"FriendlyName": "Unreal Codex",
+	"Description": "OpenAI Codex CLI integration for Unreal Engine 5.7. Get AI coding assistance with built-in UE5.7 documentation context directly in the editor.",
 	"Category": "Editor",
 	"CreatedBy": "Natali Caggiano",
 	"CreatedByURL": "https://github.com/Natfii",
-	"DocsURL": "https://github.com/Natfii/UnrealClaude",
+	"DocsURL": "https://github.com/online5880/UnrealCodex",
 	"MarketplaceURL": "",
-	"SupportURL": "https://github.com/Natfii/UnrealClaude/issues",
+	"SupportURL": "https://github.com/online5880/UnrealCodex/issues",
 	"CanContainContent": false,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
@@ -19,7 +19,7 @@
 	"SupportedTargetPlatforms": [ "Win64", "Linux", "Mac" ],
 	"Modules": [
 		{
-			"Name": "UnrealClaude",
+			"Name": "UnrealCodex",
 			"Type": "Editor",
 			"LoadingPhase": "PostEngineInit",
 			"PlatformAllowList": [ "Win64", "Linux", "Mac" ]

@@ -1,19 +1,21 @@
-# UnrealClaude
+# UnrealCodex
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal%20Engine-5.7-313131?style=flat&logo=unrealengine&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-20-00599C?style=flat&logo=c%2B%2B&logoColor=white)
 ![Platform](https://img.shields.io/badge/Platform-Win64%20%7C%20Linux%20%7C%20Mac-0078D6?style=flat&logo=windows&logoColor=white)
-![Claude Code](https://img.shields.io/badge/Claude%20Code-Integration-D97757?style=flat&logo=anthropic&logoColor=white)
+![Codex CLI](https://img.shields.io/badge/Codex%20CLI-Integration-0A7EA4?style=flat)
 ![MCP](https://img.shields.io/badge/MCP-20%2B%20Tools-8A2BE2?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 
-**Claude Code CLI integration for Unreal Engine 5.7** - Get AI coding assistance with built-in UE5.7 documentation context directly in the editor.
+**OpenAI Codex CLI integration for Unreal Engine 5.7** - Get AI coding assistance with built-in UE5.7 documentation context directly in the editor.
 
-> **Supported Platforms:** Windows (Win64), Linux, and macOS (Apple Silicon). On Windows please use Claude Code 2.1.52 or older if you run into tool issues (2.1.71 seems ok from testing so far).
+Language: English | [한국어](README.ko.md)
+
+> **Supported Platforms:** Windows (Win64), Linux, and macOS (Apple Silicon). Codex CLI on Windows is still less battle-tested than Linux/macOS.
 
 ## Overview
 
-UnrealClaude integrates the [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) directly into the Unreal Engine 5.7 Editor. Instead of using the API directly, this plugin shells out to the `claude` command-line tool, leveraging your existing Claude Code authentication and capabilities.
+UnrealCodex integrates the [OpenAI Codex CLI](https://developers.openai.com/codex/cli) directly into the Unreal Engine 5.7 Editor. Instead of using the API directly, this plugin shells out to the `codex` command-line tool, leveraging your existing Codex authentication and capabilities.
 
 <img width="1131" height="1055" alt="{051D8F19-2677-4682-9DDF-A461041C1039}" src="https://github.com/user-attachments/assets/3803aed6-cb2d-4d2a-bac3-dbb1ec3fbf1d" />
 
@@ -25,32 +27,32 @@ UnrealClaude integrates the [Claude Code CLI](https://docs.anthropic.com/en/docs
 - **Level Management** - Open, create, and manage levels and map templates programmatically
 - **Asset Management** - Search assets, query dependencies and referencers
 - **Async Task Queue** - Long-running operations won't timeout
-- **Script Execution** - Claude can write, compile (via Live Coding), and execute scripts with your permission
+- **Script Execution** - Codex can write, compile (via Live Coding), and execute scripts with your permission
 - **Session Persistence** - Conversation history saved across editor sessions
 - **Project-Aware** - Automatically gathers project context (modules, plugins, assets) and is able to see editor viewports
-- **Uses Claude Code Auth** - No separate API key management needed
+- **Uses Codex Auth** - No separate API key management needed
 
 ## Prerequisites
 
-### 1. Install Claude Code CLI
+### 1. Install Codex CLI
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+npm i -g @openai/codex
 ```
 
-### 2. Authenticate Claude Code
+### 2. Authenticate Codex CLI
 
 ```bash
-claude auth login
+codex login
 ```
 
-This will open a browser window to authenticate with your Anthropic account (Claude Pro/Max subscription) or set up API access.
+This opens an authentication flow for your ChatGPT/Codex account (or API key mode if configured).
 
 ### 3. Verify Installation
 
 ```bash
-claude --version
-claude -p "Hello, can you see me?"
+codex --version
+codex exec --skip-git-repo-check "Reply with OK"
 ```
 
 ## Installation
@@ -65,11 +67,11 @@ This plugin must be built from source for your platform and engine version. No p
 
 1. Clone this repository (includes the MCP bridge submodule):
    ```bash
-   git clone --recurse-submodules https://github.com/Natfii/UnrealClaude.git
+   git clone --recurse-submodules https://github.com/online5880/UnrealCodex.git
    ```
    If you already cloned without `--recurse-submodules`, run:
    ```bash
-   cd UnrealClaude
+   cd UnrealCodex
    git submodule update --init
    ```
 
@@ -84,6 +86,8 @@ This plugin must be built from source for your platform and engine version. No p
    ```bash
    Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealClaude/UnrealClaude/UnrealClaude.uplugin" -Package="/output/path" -TargetPlatforms=Linux
    ```
+
+Note: the plugin root and `.uplugin` file are still named `UnrealClaude` for compatibility, while the C++ module source path is now `Source/UnrealCodex`.
 
    **macOS:**
    ```bash
@@ -140,11 +144,11 @@ Launch the editor - the plugin will load automatically.
 
 For full details, see [INSTALL_MAC.md](INSTALL_MAC.md).
 
-1. **Install Node.js and Claude Code CLI:**
+1. **Install Node.js and Codex CLI:**
    ```bash
    brew install node
-   npm install -g @anthropic-ai/claude-code
-   claude
+   npm i -g @openai/codex
+   codex login
    ```
 2. **Install the plugin** into your project's `Plugins/` directory
 3. **Install MCP bridge dependencies:**
@@ -152,7 +156,7 @@ For full details, see [INSTALL_MAC.md](INSTALL_MAC.md).
    cd YourProject/Plugins/UnrealClaude/Resources/mcp-bridge
    npm install
    ```
-4. **Launch** the editor and open **Tools > Claude Assistant**
+4. **Launch** the editor and open **Tools > Codex Assistant**
 
 ## Linux Quick Start (Rocky/Fedora)
 
@@ -179,9 +183,9 @@ For full details, see [INSTALL_LINUX.md](INSTALL_LINUX.md).
 
 ## Usage
 
-### Opening the Claude Panel
+### Opening the Codex Panel
 
- Menu → Tools → Claude Assistant
+ Menu → Tools → Codex Assistant
 
 <img width="580" height="340" alt="{778C8E0B-C354-4AD1-BBFF-B514A4D5FC16}" src="https://github.com/user-attachments/assets/2087ef40-9791-4ad9-933b-2c64370344e8" />
 
@@ -216,7 +220,7 @@ Conversations are automatically saved to your project's `Saved/UnrealClaude/` di
 
 ### Project Context
 
-UnrealClaude automatically gathers information about your project:
+UnrealCodex automatically gathers information about your project:
 - Source modules and their dependencies
 - Enabled plugins
 - Project settings
@@ -229,7 +233,7 @@ UnrealClaude automatically gathers information about your project:
 
 ### MCP Server
 
-The plugin includes a Model Context Protocol (MCP) server with 20+ tools that expose editor functionality to Claude and external tools. The MCP server runs on port 3000 by default and starts automatically when the editor loads.
+The plugin includes a Model Context Protocol (MCP) server with 20+ tools that expose editor functionality to Codex and external tools. The MCP server runs on port 3000 by default and starts automatically when the editor loads.
 
 **Tool Categories:**
 - **Actor Tools** - Spawn, move, delete, inspect, and set properties on actors
@@ -243,7 +247,9 @@ The plugin includes a Model Context Protocol (MCP) server with 20+ tools that ex
 - **Utility Tools** - Console commands, output log, viewport capture, script execution
 - **Async Task Queue** - Background execution for long-running operations
 
-For full MCP tool documentation with parameters, examples, and API details, see [UnrealClaude's MCP Bridge](https://github.com/Natfii/ue5-mcp-bridge) repository.
+<img width="707" height="542" alt="{AB6AC101-4A4C-4607-BFB6-187D49F5E65B}" src="https://github.com/user-attachments/assets/e0c2e398-8fcd-4ac6-ade7-d50870215ec1" />
+
+For full MCP tool documentation with parameters, examples, and API details, see [UnrealCodex MCP Bridge](https://github.com/online5880/UnrealCodex/tree/master/UnrealClaude/Resources/mcp-bridge).
 
 #### Dynamic UE 5.7 Context System
 
@@ -253,7 +259,8 @@ The MCP bridge includes a dynamic context loader that provides accurate UE 5.7 A
 
 ### Custom System Prompts
 
-You can extend the built-in UE5.7 context by creating a `CLAUDE.md` file in your project root:
+You can extend the built-in UE5.7 context by creating a `CLAUDE.md` file in your project root.
+Templates are available at `UnrealClaude/CLAUDE.md.default` and `UnrealClaude/CODEX.md.default`:
 
 ```markdown
 # My Project Context
@@ -271,7 +278,11 @@ You can extend the built-in UE5.7 context by creating a `CLAUDE.md` file in your
 
 ### Allowed Tools
 
-By default, the plugin runs Claude with these tools: `Read`, `Write`, `Edit`, `Grep`, `Glob`, `Bash`. You can modify this in `ClaudeSubsystem.cpp`:
+By default, the plugin runs Codex with these tools available through its runtime policy. You can adjust runtime/tool behavior in `UnrealClaude/Source/UnrealCodex/Private/ClaudeSubsystem.cpp` and `UnrealClaude/Source/UnrealCodex/Private/ClaudeCodeRunner.cpp`.
+
+### MCP Server IDs
+
+Codex examples use the MCP server ID `unrealcodex`. For backward compatibility, legacy `unrealclaude` IDs are still accepted in local configs.
 
 ```cpp
 Config.AllowedTools = { TEXT("Read"), TEXT("Grep"), TEXT("Glob") }; // Read-only
@@ -281,8 +292,8 @@ Config.AllowedTools = { TEXT("Read"), TEXT("Grep"), TEXT("Glob") }; // Read-only
 
 1. User enters a prompt in the editor widget
 2. Plugin builds context from UE5.7 knowledge + project information
-3. Executes: `claude -p --skip-permissions --append-system-prompt "..." "your prompt"`
-4. Claude Code runs with your project as the working directory
+3. Executes Codex non-interactively via `codex exec` with JSON event streaming
+4. Codex runs with your project as the working directory
 5. Response is captured and displayed in the chat panel
 6. Conversation is persisted for future sessions
 
@@ -290,27 +301,25 @@ Config.AllowedTools = { TEXT("Read"), TEXT("Grep"), TEXT("Glob") }; // Read-only
 
 ```bash
 cd "C:\YourProject"
-claude -p --skip-permissions \
-  --allowedTools "Read,Write,Edit,Grep,Glob,Bash" \
-  --append-system-prompt "You are an expert Unreal Engine 5.7 developer..." \
+codex exec --json --skip-git-repo-check \
   "How do I create a custom GameMode?"
 ```
 
 ## Troubleshooting
 
-### "Claude CLI not found"
+### "Codex CLI not found"
 
-1. Verify Claude is installed: `claude --version`
-2. Check it's in your PATH: `where claude`
+1. Verify Codex is installed: `codex --version`
+2. Check it's in your PATH: `where codex` (Windows) / `which codex` (Linux)
 3. Restart Unreal Editor after installation
 
 ### "Authentication required"
 
-Run `claude auth login` in a terminal to authenticate.
+Run `codex login` in a terminal to authenticate.
 
 ### Responses are slow
 
-Claude Code executes in your project directory and may read files for context. Large projects may have slower initial responses.
+Codex executes in your project directory and may read files for context. Large projects may have slower initial responses.
 
 You might also have too many global Claude Code plugins enabled (i.e. Superpowers, ralp-loop, context7). The context for those plugins 
 getting injected can cause slowdowns up to 3+ minutes. 
@@ -325,7 +334,7 @@ Check if port 3000 is available. The MCP server logs to `LogUnrealClaude`.
 
 ### MCP tools not available / Blueprint tools not working
 
-If Claude says the MCP tools are in its instructions but not in its function list:
+If Codex says MCP tools are configured but not available:
 
 1. **Install MCP bridge dependencies**: The most common cause is missing npm packages:
    ```bash
@@ -373,4 +382,4 @@ MIT License - See [LICENSE](UnrealClaude/LICENSE) file.
 ## Credits
 
 - Built for Unreal Engine 5.7
-- Integrates with [Claude Code](https://claude.ai/code) by Anthropic
+- Integrates with [OpenAI Codex CLI](https://developers.openai.com/codex/cli)

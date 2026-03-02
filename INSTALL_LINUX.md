@@ -1,4 +1,4 @@
-# Linux Installation Guide for UnrealClaude
+# Linux Installation Guide for UnrealCodex
 
 Verified on **Bazzite** (Fedora-based Atomic) host with a **Rocky Linux 9** Distrobox container, **UE 5.7**, and **NVIDIA RTX 4070** (Driver 590.48).
 
@@ -90,22 +90,21 @@ cd UnrealClaude/Resources/mcp-bridge
 npm install
 ```
 
-## Claude CLI
+## Codex CLI
 
-Install the Claude Code CLI:
+Install the OpenAI Codex CLI:
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+npm i -g @openai/codex
 ```
 
-The plugin searches for the `claude` binary in these locations (in order):
+The plugin searches for the `codex` binary in common locations including:
 
-1. `~/.local/bin/claude`
-2. `/usr/local/bin/claude`
-3. `/usr/bin/claude`
-4. `~/.npm-global/bin/claude`
-5. nvm-managed Node.js directories
-6. Anywhere on your `PATH`
+1. `~/.local/bin/codex`
+2. `/usr/local/bin/codex`
+3. `/usr/bin/codex`
+4. `~/.npm-global/bin/codex`
+5. Anywhere on your `PATH`
 
 ## Launch
 

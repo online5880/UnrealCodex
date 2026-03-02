@@ -38,7 +38,7 @@ void SClaudeToolbar::Construct(const FArguments& InArgs)
 			.VAlign(VAlign_Center)
 			[
 				SNew(STextBlock)
-				.Text(LOCTEXT("Title", "Claude Assistant"))
+				.Text(LOCTEXT("Title", "Codex Assistant"))
 				.TextStyle(FAppStyle::Get(), "LargeText")
 			]
 
