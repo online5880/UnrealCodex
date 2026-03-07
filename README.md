@@ -2,14 +2,14 @@
 
 ![Unreal Engine](https://img.shields.io/badge/Unreal%20Engine-5.7-313131?style=flat&logo=unrealengine&logoColor=white)
 ![C++](https://img.shields.io/badge/C%2B%2B-20-00599C?style=flat&logo=c%2B%2B&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-Win64%20%7C%20Linux-0078D6?style=flat&logo=windows&logoColor=white)
+![Platform](https://img.shields.io/badge/Platform-Win64%20%7C%20Linux%20%7C%20Mac-0078D6?style=flat&logo=windows&logoColor=white)
 ![Claude Code](https://img.shields.io/badge/Claude%20Code-Integration-D97757?style=flat&logo=anthropic&logoColor=white)
 ![MCP](https://img.shields.io/badge/MCP-20%2B%20Tools-8A2BE2?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 
 **Claude Code CLI integration for Unreal Engine 5.7** - Get AI coding assistance with built-in UE5.7 documentation context directly in the editor.
 
-> **Supported Platforms:** Windows (Win64) and Linux. On Windows please use Claude Code 2.1.52 or older if you run into tool issues. Mac support is not yet available.
+> **Supported Platforms:** Windows (Win64), Linux, and macOS (Apple Silicon). On Windows please use Claude Code 2.1.52 or older if you run into tool issues.
 
 ## Overview
 
@@ -80,6 +80,11 @@ This plugin must be built from source for your platform and engine version. No p
    Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealClaude/UnrealClaude/UnrealClaude.uplugin" -Package="/output/path" -TargetPlatforms=Linux
    ```
 
+   **macOS:**
+   ```bash
+   Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealClaude/UnrealClaude/UnrealClaude.uplugin" -Package="/output/path" -TargetPlatforms=Mac
+   ```
+
 ### Step 2: Install the Plugin
 
 Copy the built plugin to either your **project** or **engine** plugins folder.
@@ -125,6 +130,24 @@ npm install
 ### Step 4: Launch
 
 Launch the editor - the plugin will load automatically.
+
+## macOS Quick Start (Apple Silicon)
+
+For full details, see [INSTALL_MAC.md](INSTALL_MAC.md).
+
+1. **Install Node.js and Claude Code CLI:**
+   ```bash
+   brew install node
+   npm install -g @anthropic-ai/claude-code
+   claude
+   ```
+2. **Install the plugin** into your project's `Plugins/` directory
+3. **Install MCP bridge dependencies:**
+   ```bash
+   cd YourProject/Plugins/UnrealClaude/Resources/mcp-bridge
+   npm install
+   ```
+4. **Launch** the editor and open **Tools > Claude Assistant**
 
 ## Linux Quick Start (Rocky/Fedora)
 
@@ -284,7 +307,7 @@ Claude Code executes in your project directory and may read files for context. L
 
 ### Plugin doesn't compile
 
-Ensure you're on Unreal Engine 5.7. Supported platforms are Windows (Win64) and Linux.
+Ensure you're on Unreal Engine 5.7. Supported platforms are Windows (Win64), Linux, and macOS.
 
 ### MCP Server not starting
 
@@ -330,7 +353,7 @@ This tests the bridge without requiring a running Unreal Editor.
 Feel free to fork for your own needs! Possible areas for improvement:
 
 - [x] Linux support (thanks [@bearyjd](https://github.com/bearyjd))
-- [ ] Mac support
+- [x] Mac support (thanks [@lateralsummer](https://github.com/lateralsummer))
 - [ ] Additional MCP tools (current tools need refractoring, no new ones for now)
 
 ## License
