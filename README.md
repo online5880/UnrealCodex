@@ -17,7 +17,7 @@ Language: English | [한국어](README.ko.md)
 
 UnrealCodex integrates the [OpenAI Codex CLI](https://developers.openai.com/codex/cli) directly into the Unreal Engine 5.7 Editor. Instead of using the API directly, this plugin shells out to the `codex` command-line tool, leveraging your existing Codex authentication and capabilities.
 
-<img width="1131" height="1055" alt="{051D8F19-2677-4682-9DDF-A461041C1039}" src="https://github.com/user-attachments/assets/3803aed6-cb2d-4d2a-bac3-dbb1ec3fbf1d" />
+![Overview](docs/images/Overview.png)
 
 **Key Features:**
 - **Native Editor Integration** - Chat panel docked in your editor with live streaming responses, tool call grouping, and code block rendering
@@ -56,8 +56,6 @@ codex exec --skip-git-repo-check "Reply with OK"
 ```
 
 ## Installation
-
-<img width="1222" height="99" alt="Screenshot 2026-02-06 112433" src="https://github.com/user-attachments/assets/61d72364-f7bc-4f34-a768-aedc0f5cea2e" />
 
 (Check the Editor category in the plugin browser. You might need to scroll down for it if search doesn't pick it up)
 
@@ -185,9 +183,6 @@ For full details, see [INSTALL_LINUX.md](INSTALL_LINUX.md).
 
  Menu → Tools → Codex Assistant
 
-<img width="580" height="340" alt="{778C8E0B-C354-4AD1-BBFF-B514A4D5FC16}" src="https://github.com/user-attachments/assets/2087ef40-9791-4ad9-933b-2c64370344e8" />
-
-
 ### Example Prompts
 
 ```
@@ -227,8 +222,6 @@ UnrealCodex automatically gathers information about your project:
 
 ### Scripting
 
-<img width="707" height="542" alt="{AB6AC101-4A4C-4607-BFB6-187D49F5E65B}" src="https://github.com/user-attachments/assets/e0c2e398-8fcd-4ac6-ade7-d50870215ec1" />
-
 ### MCP Server
 
 The plugin includes a Model Context Protocol (MCP) server with 20+ tools that expose editor functionality to Codex and external tools. The MCP server runs on port 3000 by default and starts automatically when the editor loads.
@@ -244,8 +237,6 @@ The plugin includes a Model Context Protocol (MCP) server with 20+ tools that ex
 - **Enhanced Input Tools** - Input action and mapping context management
 - **Utility Tools** - Console commands, output log, viewport capture, script execution
 - **Async Task Queue** - Background execution for long-running operations
-
-<img width="707" height="542" alt="{AB6AC101-4A4C-4607-BFB6-187D49F5E65B}" src="https://github.com/user-attachments/assets/e0c2e398-8fcd-4ac6-ade7-d50870215ec1" />
 
 For full MCP tool documentation with parameters, examples, and API details, see [UnrealCodex MCP Bridge](https://github.com/online5880/UnrealCodex/tree/master/UnrealCodex/Resources/mcp-bridge).
 
