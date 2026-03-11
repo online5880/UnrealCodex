@@ -1,11 +1,11 @@
-# macOS Installation Guide for UnrealClaude
+# macOS Installation Guide for UnrealCodex
 
 Tested on **Apple Silicon** (M4 Max), **UE 5.7.0**, **macOS 15**.
 
 ## What You Need
 
 - **Unreal Engine 5.7** installed and working
-- A **Claude Pro or Max subscription** (the plugin uses your existing Claude account)
+- Codex CLI access via your ChatGPT account or API key configuration
 
 ## Step 1: Install Node.js
 
@@ -26,44 +26,44 @@ node --version   # should print v18 or higher
 npm --version    # should print a version number
 ```
 
-## Step 2: Install the Claude Code CLI
+## Step 2: Install the Codex CLI
 
 Open Terminal and run:
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+npm i -g @openai/codex
 ```
 
 Then authenticate:
 
 ```bash
-claude
+codex login
 ```
 
-This opens a browser window to sign in with your Claude account. Once authenticated, you can close the terminal session.
+This opens a browser window to sign in with your ChatGPT account. API key mode also works if configured separately.
 
 ## Step 3: Install the Plugin
 
 ### Prebuilt (recommended)
 
-1. Download `UnrealClaude-Mac-v1.2.2.zip` from the [Releases page](https://github.com/lateralsummer/UnrealClaudeMac/releases)
-2. Unzip it — you should see a folder called `UnrealClaude`
-3. Copy the `UnrealClaude` folder into your project's `Plugins` directory:
+1. Download the latest macOS package from the [UnrealCodex releases page](https://github.com/online5880/UnrealCodex/releases) if one is available
+2. Unzip it — you should see a folder called `UnrealCodex`
+3. Copy the `UnrealCodex` folder into your project's `Plugins` directory:
 
 ```
 YourProject/
   Plugins/
-    UnrealClaude/      <-- put it here
+    UnrealCodex/      <-- put it here
       Binaries/
       Resources/
       Source/
-      UnrealClaude.uplugin
+      UnrealCodex.uplugin
 ```
 
 4. Install the MCP bridge dependencies:
 
 ```bash
-cd YourProject/Plugins/UnrealClaude/Resources/mcp-bridge
+cd YourProject/Plugins/UnrealCodex/Resources/mcp-bridge
 npm install
 ```
 
@@ -71,28 +71,28 @@ npm install
 
 ```bash
 # Clone the repo (includes the MCP bridge submodule)
-git clone --recurse-submodules https://github.com/lateralsummer/UnrealClaudeMac.git
-cd UnrealClaudeMac
+git clone --recurse-submodules https://github.com/online5880/UnrealCodex.git
+cd UnrealCodex
 
 # Install MCP bridge dependencies
-cd UnrealClaude/Resources/mcp-bridge
+cd UnrealCodex/Resources/mcp-bridge
 npm install
 cd ../../..
 
 # Build (replace with your UE 5.7 path)
 /Users/Shared/Epic\ Games/UE_5.7/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin \
-  -Plugin="$(pwd)/UnrealClaude/UnrealClaude.uplugin" \
+  -Plugin="$(pwd)/UnrealCodex/UnrealCodex.uplugin" \
   -Package="$(pwd)/BuiltPlugin" \
   -TargetPlatforms=Mac -Rocket
 
 # Copy to your project
-cp -R BuiltPlugin YourProject/Plugins/UnrealClaude
+cp -R BuiltPlugin YourProject/Plugins/UnrealCodex
 ```
 
 ## Step 4: Launch
 
 1. Open your project in Unreal Engine 5.7
-2. Go to **Tools > Claude Assistant** (or look for it in the menu bar)
+2. Go to **Tools > Codex Assistant** (or look for it in the menu bar)
 3. The status bar at the bottom should show a green **Ready** indicator
 4. Type a message and press Enter or click Send
 
@@ -107,10 +107,10 @@ No additional tools or dependencies are needed on macOS.
 ## Troubleshooting
 
 **Plugin doesn't appear in the editor:**
-Make sure the `UnrealClaude` folder is directly inside `Plugins/` (not nested like `Plugins/UnrealClaude/UnrealClaude/`).
+Make sure the `UnrealCodex` folder is directly inside `Plugins/` (not nested like `Plugins/UnrealCodex/UnrealCodex/`).
 
-**Claude hangs at "Thinking...":**
-Run `claude` in Terminal to check your authentication is working. If it asks you to log in, do so, then restart the editor.
+**Codex hangs at "Thinking...":**
+Run `codex --version` and `codex login` in Terminal to check authentication. If it asks you to log in, do so, then restart the editor.
 
-**"Claude CLI not found" in the Output Log:**
-The plugin looks for the `claude` binary in standard locations. Run `which claude` in Terminal to verify it's installed. If it's in an unusual location, make sure it's on your `PATH`.
+**"Codex CLI not found" in the Output Log:**
+The plugin looks for the `codex` binary in standard locations. Run `which codex` in Terminal to verify it's installed. If it's in an unusual location, make sure it's on your `PATH`.

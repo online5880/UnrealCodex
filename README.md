@@ -79,19 +79,17 @@ This plugin must be built from source for your platform and engine version. No p
 
    **Windows:**
    ```bash
-   Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -Plugin="PATH\TO\UnrealClaude\UnrealClaude\UnrealClaude.uplugin" -Package="OUTPUT\PATH" -TargetPlatforms=Win64
+   Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -Plugin="PATH\TO\UnrealCodex\UnrealCodex\UnrealCodex.uplugin" -Package="OUTPUT\PATH" -TargetPlatforms=Win64
    ```
 
    **Linux:**
    ```bash
-   Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealClaude/UnrealClaude/UnrealClaude.uplugin" -Package="/output/path" -TargetPlatforms=Linux
+   Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealCodex/UnrealCodex/UnrealCodex.uplugin" -Package="/output/path" -TargetPlatforms=Linux
    ```
-
-Note: the plugin root and `.uplugin` file are still named `UnrealClaude` for compatibility, while the C++ module source path is now `Source/UnrealCodex`.
 
    **macOS:**
    ```bash
-   Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealClaude/UnrealClaude/UnrealClaude.uplugin" -Package="/output/path" -TargetPlatforms=Mac
+   Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealCodex/UnrealCodex/UnrealCodex.uplugin" -Package="/output/path" -TargetPlatforms=Mac
    ```
 
 ### Step 2: Install the Plugin
@@ -106,12 +104,12 @@ YourProject/
 ├── Content/
 ├── Source/
 └── Plugins/
-    └── UnrealClaude/
+    └── UnrealCodex/
         ├── Binaries/
         ├── Source/
         ├── Resources/
         ├── Config/
-        └── UnrealClaude.uplugin
+        └── UnrealCodex.uplugin
 ```
 
 **Option B: Engine Plugin (All Projects)**
@@ -120,19 +118,19 @@ Copy to your engine's plugins folder:
 
 **Windows:**
 ```
-C:\Program Files\Epic Games\UE_5.7\Engine\Plugins\Marketplace\UnrealClaude\
+C:\Program Files\Epic Games\UE_5.7\Engine\Plugins\Marketplace\UnrealCodex\
 ```
 
 **Linux:**
 ```
-/path/to/UnrealEngine/Engine/Plugins/Marketplace/UnrealClaude/
+/path/to/UnrealEngine/Engine/Plugins/Marketplace/UnrealCodex/
 ```
 
 ### Step 3: Install MCP Bridge Dependencies
 
 Required for Blueprint tools and editor integration:
 ```bash
-cd <PluginPath>/UnrealClaude/Resources/mcp-bridge
+cd <PluginPath>/UnrealCodex/Resources/mcp-bridge
 npm install
 ```
 
@@ -153,7 +151,7 @@ For full details, see [INSTALL_MAC.md](INSTALL_MAC.md).
 2. **Install the plugin** into your project's `Plugins/` directory
 3. **Install MCP bridge dependencies:**
    ```bash
-   cd YourProject/Plugins/UnrealClaude/Resources/mcp-bridge
+   cd YourProject/Plugins/UnrealCodex/Resources/mcp-bridge
    npm install
    ```
 4. **Launch** the editor and open **Tools > Codex Assistant**
@@ -216,7 +214,7 @@ How do I properly use TObjectPtr<> vs raw pointers in UE5.7?
 
 ### Session Persistence
 
-Conversations are automatically saved to your project's `Saved/UnrealClaude/` directory and restored when you reopen the editor. The plugin maintains conversation context across sessions.
+Conversations are automatically saved to your project's `Saved/UnrealCodex/` directory and restored when you reopen the editor. The plugin maintains conversation context across sessions.
 
 ### Project Context
 
@@ -249,7 +247,7 @@ The plugin includes a Model Context Protocol (MCP) server with 20+ tools that ex
 
 <img width="707" height="542" alt="{AB6AC101-4A4C-4607-BFB6-187D49F5E65B}" src="https://github.com/user-attachments/assets/e0c2e398-8fcd-4ac6-ade7-d50870215ec1" />
 
-For full MCP tool documentation with parameters, examples, and API details, see [UnrealCodex MCP Bridge](https://github.com/online5880/UnrealCodex/tree/master/UnrealClaude/Resources/mcp-bridge).
+For full MCP tool documentation with parameters, examples, and API details, see [UnrealCodex MCP Bridge](https://github.com/online5880/UnrealCodex/tree/master/UnrealCodex/Resources/mcp-bridge).
 
 #### Dynamic UE 5.7 Context System
 
@@ -260,7 +258,7 @@ The MCP bridge includes a dynamic context loader that provides accurate UE 5.7 A
 ### Custom System Prompts
 
 You can extend the built-in UE5.7 context by creating a `CLAUDE.md` file in your project root.
-Templates are available at `UnrealClaude/CLAUDE.md.default` and `UnrealClaude/CODEX.md.default`:
+Templates are available at `UnrealCodex/CLAUDE.md.default` and `UnrealCodex/CODEX.md.default`:
 
 ```markdown
 # My Project Context
@@ -278,11 +276,11 @@ Templates are available at `UnrealClaude/CLAUDE.md.default` and `UnrealClaude/CO
 
 ### Allowed Tools
 
-By default, the plugin runs Codex with these tools available through its runtime policy. You can adjust runtime/tool behavior in `UnrealClaude/Source/UnrealCodex/Private/ClaudeSubsystem.cpp` and `UnrealClaude/Source/UnrealCodex/Private/ClaudeCodeRunner.cpp`.
+By default, the plugin runs Codex with these tools available through its runtime policy. You can adjust runtime/tool behavior in `UnrealCodex/Source/UnrealCodex/Private/CodexSubsystem.cpp` and `UnrealCodex/Source/UnrealCodex/Private/CodexCodeRunner.cpp`.
 
 ### MCP Server IDs
 
-Codex examples use the MCP server ID `unrealcodex`. For backward compatibility, legacy `unrealclaude` IDs are still accepted in local configs.
+Codex examples use the MCP server ID `unrealcodex`.
 
 ```cpp
 Config.AllowedTools = { TEXT("Read"), TEXT("Grep"), TEXT("Glob") }; // Read-only
@@ -321,7 +319,7 @@ Run `codex login` in a terminal to authenticate.
 
 Codex executes in your project directory and may read files for context. Large projects may have slower initial responses.
 
-You might also have too many global Claude Code plugins enabled (i.e. Superpowers, ralp-loop, context7). The context for those plugins 
+You might also have too many global agent plugins enabled (i.e. Superpowers, ralp-loop, context7). The context for those plugins 
 getting injected can cause slowdowns up to 3+ minutes. 
 
 ### Plugin doesn't compile
@@ -330,7 +328,7 @@ Ensure you're on Unreal Engine 5.7. Supported platforms are Windows (Win64), Lin
 
 ### MCP Server not starting
 
-Check if port 3000 is available. The MCP server logs to `LogUnrealClaude`.
+Check if port 3000 is available. The MCP server logs to `LogUnrealCodex`.
 
 ### MCP tools not available / Blueprint tools not working
 
@@ -338,7 +336,7 @@ If Codex says MCP tools are configured but not available:
 
 1. **Install MCP bridge dependencies**: The most common cause is missing npm packages:
    ```bash
-   cd YourProject/Plugins/UnrealClaude/Resources/mcp-bridge
+   cd YourProject/Plugins/UnrealCodex/Resources/mcp-bridge
    npm install
    ```
 
@@ -348,7 +346,7 @@ If Codex says MCP tools are configured but not available:
    ```
    You should see a JSON response with project info.
 
-3. **Check the Output Log**: Look for `LogUnrealClaude` messages:
+3. **Check the Output Log**: Look for `LogUnrealCodex` messages:
    - `MCP Server started on http://localhost:3000` - Server is running
    - `Registered X MCP tools` - Tools are loaded
 
@@ -377,7 +375,7 @@ Feel free to fork for your own needs! Possible areas for improvement:
 
 ## License
 
-MIT License - See [LICENSE](UnrealClaude/LICENSE) file.
+MIT License - See [LICENSE](UnrealCodex/LICENSE) file.
 
 ## Credits
 

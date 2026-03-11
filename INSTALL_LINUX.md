@@ -19,7 +19,7 @@ These resolve common `libnss3.so` and `libatk-1.0.so` errors when launching the 
 
 ## Clipboard Support
 
-UnrealClaude supports clipboard image paste on Linux via two backends:
+UnrealCodex supports clipboard image paste on Linux via two backends:
 
 - **Wayland** (preferred): Requires `wl-clipboard`
 - **X11** (fallback): Requires `xclip`
@@ -66,7 +66,7 @@ Linux users must compile the plugin from source (no prebuilt binaries are provid
 UE_ROOT=/path/to/UnrealEngine
 
 $UE_ROOT/Engine/Build/BatchFiles/RunUAT.sh BuildPlugin \
-  -Plugin="$(pwd)/UnrealClaude/UnrealClaude.uplugin" \
+  -Plugin="$(pwd)/UnrealCodex/UnrealCodex.uplugin" \
   -Package="$(pwd)/BuiltPlugin" \
   -TargetPlatforms=Linux
 ```
@@ -86,7 +86,7 @@ node --version  # must be >= 18.0.0
 git submodule update --init
 
 # Install bridge dependencies
-cd UnrealClaude/Resources/mcp-bridge
+cd UnrealCodex/Resources/mcp-bridge
 npm install
 ```
 

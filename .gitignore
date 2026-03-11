@@ -28,7 +28,7 @@ Tutorials/
 # Node.js (for MCP bridge)
 # Ignore node_modules everywhere EXCEPT the mcp-bridge (needed for distribution)
 node_modules/
-!UnrealClaude/Resources/mcp-bridge/node_modules/
+!UnrealCodex/Resources/mcp-bridge/node_modules/
 npm-debug.log
 yarn-error.log
 # Keep package-lock.json for reproducible builds
@@ -86,5 +86,5 @@ coverage/
 *.tar.gz
 
 # Personal CLAUDE.md (use CLAUDE.md.default as template)
-UnrealClaude/CLAUDE.md
-UnrealClaude/Saved/UnrealClaude/test-output.txt
+UnrealCodex/CLAUDE.md
+UnrealCodex/Saved/UnrealCodex/test-output.txt

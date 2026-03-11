@@ -47,23 +47,23 @@ codex exec --skip-git-repo-check "Reply with OK"
 
 ```bash
 # Windows
-Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -Plugin="PATH\TO\UnrealClaude\UnrealClaude\UnrealClaude.uplugin" -Package="OUTPUT\PATH" -TargetPlatforms=Win64
+Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -Plugin="PATH\TO\UnrealCodex\UnrealCodex\UnrealCodex.uplugin" -Package="OUTPUT\PATH" -TargetPlatforms=Win64
 
 # Linux
-Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealClaude/UnrealClaude/UnrealClaude.uplugin" -Package="/output/path" -TargetPlatforms=Linux
+Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealCodex/UnrealCodex/UnrealCodex.uplugin" -Package="/output/path" -TargetPlatforms=Linux
 ```
 
-참고: 호환성 때문에 플러그인 루트/`.uplugin` 파일명은 `UnrealClaude`를 유지하고, C++ 모듈 소스 경로는 `Source/UnrealCodex`를 사용합니다.
+참고: 호환성 때문에 플러그인 루트/`.uplugin` 파일명은 `UnrealCodex`를 유지하고, C++ 모듈 소스 경로는 `Source/UnrealCodex`를 사용합니다.
 
 ### 2) 프로젝트 또는 엔진에 복사
 
-- 권장: `YourProject/Plugins/UnrealClaude/`
-- 엔진 공용: `Engine/Plugins/Marketplace/UnrealClaude/`
+- 권장: `YourProject/Plugins/UnrealCodex/`
+- 엔진 공용: `Engine/Plugins/Marketplace/UnrealCodex/`
 
 ### 3) MCP 브리지 의존성 설치
 
 ```bash
-cd <PluginPath>/UnrealClaude/Resources/mcp-bridge
+cd <PluginPath>/UnrealCodex/Resources/mcp-bridge
 npm install
 ```
 
@@ -89,7 +89,7 @@ World Partition 스트리밍 구성 추천해줘.
 ### 프로젝트 커스텀 지시문
 
 프로젝트 루트에 `CLAUDE.md`를 만들면 기본 컨텍스트에 추가됩니다.
-템플릿은 `UnrealClaude/CLAUDE.md.default`, `UnrealClaude/CODEX.md.default`를 사용할 수 있습니다.
+템플릿은 `UnrealCodex/CLAUDE.md.default`, `UnrealCodex/CODEX.md.default`를 사용할 수 있습니다.
 
 ```markdown
 # My Project Context
@@ -104,7 +104,6 @@ World Partition 스트리밍 구성 추천해줘.
 ### MCP 서버 ID
 
 - 기본 예시: `unrealcodex`
-- 하위 호환: `unrealclaude`도 허용
 
 ## 트러블슈팅
 
@@ -128,13 +127,13 @@ codex login
 ### MCP 도구가 안 보이는 경우
 
 ```bash
-cd YourProject/Plugins/UnrealClaude/Resources/mcp-bridge
+cd YourProject/Plugins/UnrealCodex/Resources/mcp-bridge
 npm install
 curl http://localhost:3000/mcp/status
 ```
 
-출력 로그에서 `LogUnrealClaude` 카테고리를 확인하세요.
+출력 로그에서 `LogUnrealCodex` 카테고리를 확인하세요.
 
 ## 라이선스
 
-MIT License - `UnrealClaude/LICENSE`
+MIT License - `UnrealCodex/LICENSE`
