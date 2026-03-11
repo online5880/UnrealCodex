@@ -5,7 +5,7 @@
 ![Platform](https://img.shields.io/badge/Platform-Win64%20%7C%20Linux-0078D6?style=flat&logo=windows&logoColor=white)
 ![Codex CLI](https://img.shields.io/badge/Codex%20CLI-Integration-0A7EA4?style=flat)
 
-OpenAI Codex CLI를 Unreal Engine 5.7 에디터에 통합한 플러그인입니다.
+OpenAI Codex CLI를 Unreal Engine 5.7 에디터 안에서 사용할 수 있게 해주는 플러그인입니다.
 
 Language: [English](README.md) | 한국어
 
@@ -18,7 +18,7 @@ UnrealCodex는 에디터 내부에서 `codex` CLI를 직접 실행해 AI 보조 
 - UE 5.7 + 프로젝트 컨텍스트 자동 수집
 - 세션 저장/복원
 
-지원 플랫폼: Windows(Win64), Linux
+지원 플랫폼: Windows(Win64), Linux, macOS(Apple Silicon)
 
 ## 사전 준비
 
@@ -53,7 +53,7 @@ Engine\Build\BatchFiles\RunUAT.bat BuildPlugin -Plugin="PATH\TO\UnrealCodex\Unre
 Engine/Build/BatchFiles/RunUAT.sh BuildPlugin -Plugin="/path/to/UnrealCodex/UnrealCodex/UnrealCodex.uplugin" -Package="/output/path" -TargetPlatforms=Linux
 ```
 
-참고: 호환성 때문에 플러그인 루트/`.uplugin` 파일명은 `UnrealCodex`를 유지하고, C++ 모듈 소스 경로는 `Source/UnrealCodex`를 사용합니다.
+참고: 플러그인 루트와 `.uplugin` 파일명은 `UnrealCodex`이며, C++ 모듈 소스 경로도 `Source/UnrealCodex`를 사용합니다.
 
 ### 2) 프로젝트 또는 엔진에 복사
 
@@ -89,7 +89,7 @@ World Partition 스트리밍 구성 추천해줘.
 ### 프로젝트 커스텀 지시문
 
 프로젝트 루트에 `CLAUDE.md`를 만들면 기본 컨텍스트에 추가됩니다.
-템플릿은 `UnrealCodex/CLAUDE.md.default`, `UnrealCodex/CODEX.md.default`를 사용할 수 있습니다.
+시작용 템플릿은 `UnrealCodex/CLAUDE.md.default`, `UnrealCodex/CODEX.md.default`를 사용할 수 있습니다.
 
 ```markdown
 # My Project Context
@@ -124,7 +124,7 @@ PATH 점검:
 codex login
 ```
 
-### MCP 도구가 안 보이는 경우
+### MCP 도구가 보이지 않는 경우
 
 ```bash
 cd YourProject/Plugins/UnrealCodex/Resources/mcp-bridge

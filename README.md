@@ -7,7 +7,7 @@
 ![MCP](https://img.shields.io/badge/MCP-20%2B%20Tools-8A2BE2?style=flat)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 
-**OpenAI Codex CLI integration for Unreal Engine 5.7** - Get AI coding assistance with built-in UE5.7 documentation context directly in the editor.
+**OpenAI Codex CLI integration for Unreal Engine 5.7** - Get AI coding assistance directly in the editor with built-in UE5.7 documentation context.
 
 Language: English | [한국어](README.ko.md)
 
@@ -23,14 +23,14 @@ UnrealCodex integrates the [OpenAI Codex CLI](https://developers.openai.com/code
 - **Native Editor Integration** - Chat panel docked in your editor with live streaming responses, tool call grouping, and code block rendering
 - **MCP Server** - 20+ Model Context Protocol tools for actor manipulation, Blueprint editing, level management, materials, input, and more
 - **Dynamic UE 5.7 Context System** - The MCP bridge includes a dynamic context loader that provides accurate UE 5.7 API documentation on demand
-- **Blueprint Editing** - Create and modify Blueprints, Animation Blueprints, state machines (Few bugs still, don't rely on fully)
+- **Blueprint Editing** - Create and modify Blueprints, Animation Blueprints, and state machines (still experimental, so verify results before relying on them)
 - **Level Management** - Open, create, and manage levels and map templates programmatically
 - **Asset Management** - Search assets, query dependencies and referencers
 - **Async Task Queue** - Long-running operations won't timeout
 - **Script Execution** - Codex can write, compile (via Live Coding), and execute scripts with your permission
 - **Session Persistence** - Conversation history saved across editor sessions
-- **Project-Aware** - Automatically gathers project context (modules, plugins, assets) and is able to see editor viewports
-- **Uses Codex Auth** - No separate API key management needed
+- **Project-Aware** - Automatically gathers project context such as modules, plugins, assets, and editor viewport state
+- **Uses Codex Authentication** - No separate API key management is required
 
 ## Prerequisites
 
@@ -57,7 +57,7 @@ codex exec --skip-git-repo-check "Reply with OK"
 
 ## Installation
 
-(Check the Editor category in the plugin browser. You might need to scroll down for it if search doesn't pick it up)
+(Check the Editor category in the plugin browser. You may need to scroll down if search does not surface it.)
 
 ### Step 1: Clone and Build
 
@@ -181,7 +181,7 @@ For full details, see [INSTALL_LINUX.md](INSTALL_LINUX.md).
 
 ### Opening the Codex Panel
 
- Menu → Tools → Codex Assistant
+Menu -> Tools -> Codex Assistant
 
 ### Example Prompts
 
@@ -220,8 +220,6 @@ UnrealCodex automatically gathers information about your project:
 - Recent assets
 - Custom CLAUDE.md instructions
 
-### Scripting
-
 ### MCP Server
 
 The plugin includes a Model Context Protocol (MCP) server with 20+ tools that expose editor functionality to Codex and external tools. The MCP server runs on port 3000 by default and starts automatically when the editor loads.
@@ -249,7 +247,7 @@ The MCP bridge includes a dynamic context loader that provides accurate UE 5.7 A
 ### Custom System Prompts
 
 You can extend the built-in UE5.7 context by creating a `CLAUDE.md` file in your project root.
-Templates are available at `UnrealCodex/CLAUDE.md.default` and `UnrealCodex/CODEX.md.default`:
+Starter templates are available at `UnrealCodex/CLAUDE.md.default` and `UnrealCodex/CODEX.md.default`:
 
 ```markdown
 # My Project Context
@@ -323,7 +321,7 @@ Check if port 3000 is available. The MCP server logs to `LogUnrealCodex`.
 
 ### MCP tools not available / Blueprint tools not working
 
-If Codex says MCP tools are configured but not available:
+If Codex reports that MCP tools are configured but unavailable:
 
 1. **Install MCP bridge dependencies**: The most common cause is missing npm packages:
    ```bash
@@ -362,7 +360,7 @@ Feel free to fork for your own needs! Possible areas for improvement:
 
 - [x] Linux support (thanks [@bearyjd](https://github.com/bearyjd))
 - [x] Mac support (thanks [@lateralsummer](https://github.com/lateralsummer))
-- [ ] Additional MCP tools (current tools need refractoring, no new ones for now)
+- [ ] Additional MCP tools (the current toolset still needs refactoring, so no new tools for now)
 
 ## License
 
