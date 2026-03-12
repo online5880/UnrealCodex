@@ -6,6 +6,35 @@
 #include "UnrealCodexConstants.h"
 #include "Containers/Ticker.h"
 
+namespace
+{
+	/**
+	 * Built-in hook that adds consistent pre/post execution logging.
+	 */
+	class FMCPLoggingHook final : public IMCPToolHook
+	{
+	public:
+		virtual bool BeforeExecute(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& /*OutResult*/) override
+		{
+			UE_LOG(LogUnrealCodex, Verbose, TEXT("[MCP Hook] BeforeExecute: %s (paramCount=%d)"), *ToolName, Params->Values.Num());
+			return true;
+		}
+
+		virtual void AfterExecute(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult) override
+		{
+			UE_LOG(
+				LogUnrealCodex,
+				Verbose,
+				TEXT("[MCP Hook] AfterExecute: %s success=%s message=%s (paramCount=%d)"),
+				*ToolName,
+				InOutResult.bSuccess ? TEXT("true") : TEXT("false"),
+				*InOutResult.Message,
+				Params->Values.Num()
+			);
+		}
+	};
+}
+
 // Include all tool implementations
 #include "Tools/MCPTool_SpawnActor.h"
 #include "Tools/MCPTool_GetLevelActors.h"
@@ -40,6 +69,9 @@
 
 FMCPToolRegistry::FMCPToolRegistry()
 {
+	HookManager = MakeShared<FMCPToolHookManager>();
+	HookManager->RegisterHook(MakeShared<FMCPLoggingHook>());
+
 	RegisterBuiltinTools();
 }
 
@@ -202,10 +234,19 @@ FMCPToolResult FMCPToolRegistry::ExecuteTool(const FString& ToolName, const TSha
 		return FMCPToolResult::Error(FString::Printf(TEXT("Tool '%s' not found"), *ToolName));
 	}
 
+	// Pre-execution hooks can block execution and return an explicit result.
+	FMCPToolResult Result;
+	if (HookManager.IsValid() && !HookManager->RunBeforeHooks(ToolName, Params, Result))
+	{
+		UE_LOG(LogUnrealCodex, Warning, TEXT("Tool '%s' blocked by pre-execution hook: %s"), *ToolName, *Result.Message);
+		return Result;
+	}
+
 	UE_LOG(LogUnrealCodex, Log, TEXT("Executing MCP tool: %s"), *ToolName);
 
+	const double StartSeconds = FPlatformTime::Seconds();
+
 	// Execute on game thread to ensure safe access to engine objects
-	FMCPToolResult Result;
 
 	if (IsInGameThread())
 	{
@@ -246,9 +287,16 @@ FMCPToolResult FMCPToolRegistry::ExecuteTool(const FString& ToolName, const TSha
 		Result = *SharedResult;
 	}
 
-	UE_LOG(LogUnrealCodex, Log, TEXT("Tool '%s' execution %s: %s"),
+	if (HookManager.IsValid())
+	{
+		HookManager->RunAfterHooks(ToolName, Params, Result);
+	}
+
+	const double DurationMs = (FPlatformTime::Seconds() - StartSeconds) * 1000.0;
+	UE_LOG(LogUnrealCodex, Log, TEXT("Tool '%s' execution %s in %.2f ms: %s"),
 		*ToolName,
 		Result.bSuccess ? TEXT("succeeded") : TEXT("failed"),
+		DurationMs,
 		*Result.Message);
 
 	return Result;
@@ -257,4 +305,14 @@ FMCPToolResult FMCPToolRegistry::ExecuteTool(const FString& ToolName, const TSha
 bool FMCPToolRegistry::HasTool(const FString& ToolName) const
 {
 	return Tools.Contains(ToolName);
+}
+
+void FMCPToolRegistry::RegisterHook(const TSharedPtr<IMCPToolHook>& Hook)
+{
+	if (!HookManager.IsValid())
+	{
+		HookManager = MakeShared<FMCPToolHookManager>();
+	}
+
+	HookManager->RegisterHook(Hook);
 }

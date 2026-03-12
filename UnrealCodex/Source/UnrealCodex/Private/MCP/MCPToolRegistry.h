@@ -172,6 +172,74 @@ public:
 };
 
 /**
+ * Optional hook interface for cross-cutting concerns around tool execution.
+ *
+ * Hooks can implement:
+ * - pre-execution validation / gating (BeforeExecute)
+ * - post-execution observation / result transformation (AfterExecute)
+ */
+class IMCPToolHook
+{
+public:
+	virtual ~IMCPToolHook() = default;
+
+	/**
+	 * Called before a tool executes.
+	 * @return true to continue execution, false to short-circuit with OutResult.
+	 */
+	virtual bool BeforeExecute(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& OutResult)
+	{
+		return true;
+	}
+
+	/** Called after a tool executes (success or failure). */
+	virtual void AfterExecute(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult)
+	{
+	}
+};
+
+/**
+ * Lightweight hook manager used by FMCPToolRegistry.
+ */
+class FMCPToolHookManager
+{
+public:
+	void RegisterHook(const TSharedPtr<IMCPToolHook>& Hook)
+	{
+		if (Hook.IsValid())
+		{
+			Hooks.Add(Hook);
+		}
+	}
+
+	bool RunBeforeHooks(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& OutResult) const
+	{
+		for (const TSharedPtr<IMCPToolHook>& Hook : Hooks)
+		{
+			if (Hook.IsValid() && !Hook->BeforeExecute(ToolName, Params, OutResult))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	void RunAfterHooks(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult) const
+	{
+		for (const TSharedPtr<IMCPToolHook>& Hook : Hooks)
+		{
+			if (Hook.IsValid())
+			{
+				Hook->AfterExecute(ToolName, Params, InOutResult);
+			}
+		}
+	}
+
+private:
+	TArray<TSharedPtr<IMCPToolHook>> Hooks;
+};
+
+/**
  * Registry for managing MCP tools
  */
 class FMCPToolRegistry
@@ -194,6 +262,9 @@ public:
 
 	/** Check if a tool exists */
 	bool HasTool(const FString& ToolName) const;
+
+	/** Register an execution hook (logging, validation, metrics, etc.) */
+	void RegisterHook(const TSharedPtr<IMCPToolHook>& Hook);
 
 	/** Find a tool by name (returns nullptr if not found) */
 	IMCPTool* FindTool(const FString& ToolName) const
@@ -229,4 +300,7 @@ private:
 
 	/** Async task queue for long-running operations */
 	TSharedPtr<FMCPTaskQueue> TaskQueue;
+
+	/** Tool execution hooks (pre/post execution cross-cutting concerns) */
+	TSharedPtr<FMCPToolHookManager> HookManager;
 };
