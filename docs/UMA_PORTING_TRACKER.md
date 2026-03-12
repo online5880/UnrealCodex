@@ -109,9 +109,9 @@
 - [ ] `pcg_get_info.py`
 - [ ] `physics_get_info.py`
 - [ ] `project_class_hierarchy.py`
-- [ ] `project_dependencies.py`
-- [ ] `project_plugins.py`
-- [ ] `project_settings.py`
+- [ ] `project_dependencies.py` (부분 대응 예정: `project_inspect` 확장 필요)
+- [x] `project_plugins.py` (대응: `project_inspect` action=plugins)
+- [x] `project_settings.py` (대응: `project_inspect` action=settings)
 - [x] `project_snapshot.py` (대응: `project_context` full)
 - [x] `project_structure.py` (대응: `project_context` summary/full)
 - [ ] `sequencer_get_info.py`
