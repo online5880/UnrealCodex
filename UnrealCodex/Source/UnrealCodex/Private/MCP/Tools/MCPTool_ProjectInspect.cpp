@@ -5,7 +5,10 @@
 #include "Interfaces/IPluginManager.h"
 #include "Misc/App.h"
 #include "Misc/ConfigCacheIni.h"
+#include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "HAL/FileManager.h"
+#include "ProjectContext.h"
 
 FMCPToolResult FMCPTool_ProjectInspect::Execute(const TSharedRef<FJsonObject>& Params)
 {
@@ -25,8 +28,16 @@ FMCPToolResult FMCPTool_ProjectInspect::Execute(const TSharedRef<FJsonObject>& P
 	{
 		return ExecuteSettings();
 	}
+	if (Action == TEXT("dependencies"))
+	{
+		return ExecuteDependencies();
+	}
+	if (Action == TEXT("class_hierarchy"))
+	{
+		return ExecuteClassHierarchy(Params);
+	}
 
-	return FMCPToolResult::Error(FString::Printf(TEXT("Unsupported action '%s'. Use plugins or settings."), *Action));
+	return FMCPToolResult::Error(FString::Printf(TEXT("Unsupported action '%s'. Use plugins, settings, dependencies, or class_hierarchy."), *Action));
 }
 
 FMCPToolResult FMCPTool_ProjectInspect::ExecutePlugins() const
@@ -85,4 +96,142 @@ FMCPToolResult FMCPTool_ProjectInspect::ExecuteSettings() const
 	Data->SetStringField(TEXT("global_default_game_mode"), GlobalDefaultGameMode);
 
 	return FMCPToolResult::Success(TEXT("Retrieved project settings snapshot."), Data);
+}
+
+FMCPToolResult FMCPTool_ProjectInspect::ExecuteDependencies() const
+{
+	const FString SourceDir = FPaths::Combine(FPaths::ProjectDir(), TEXT("Source"));
+
+	TArray<FString> BuildCsFiles;
+	IFileManager::Get().FindFilesRecursive(BuildCsFiles, *SourceDir, TEXT("*.Build.cs"), true, false, false);
+
+	TArray<TSharedPtr<FJsonValue>> ModulesArray;
+	for (const FString& BuildCsPath : BuildCsFiles)
+	{
+		FString FileContent;
+		if (!FFileHelper::LoadFileToString(FileContent, *BuildCsPath))
+		{
+			continue;
+		}
+
+		TArray<FString> PublicDeps;
+		TArray<FString> PrivateDeps;
+
+		auto ParseDependencyList = [&FileContent](const FString& Marker, TArray<FString>& OutDependencies)
+		{
+			int32 SearchPos = 0;
+			while (true)
+			{
+				const int32 MarkerPos = FileContent.Find(Marker, ESearchCase::CaseSensitive, ESearchDir::FromStart, SearchPos);
+				if (MarkerPos == INDEX_NONE)
+				{
+					break;
+				}
+
+				const int32 OpenPos = FileContent.Find(TEXT("{"), ESearchCase::CaseSensitive, ESearchDir::FromStart, MarkerPos);
+				const int32 ClosePos = OpenPos == INDEX_NONE ? INDEX_NONE : FileContent.Find(TEXT("}"), ESearchCase::CaseSensitive, ESearchDir::FromStart, OpenPos);
+				if (OpenPos == INDEX_NONE || ClosePos == INDEX_NONE)
+				{
+					SearchPos = MarkerPos + Marker.Len();
+					continue;
+				}
+
+				const FString Block = FileContent.Mid(OpenPos + 1, ClosePos - OpenPos - 1);
+				TArray<FString> Lines;
+				Block.ParseIntoArrayLines(Lines, true);
+				for (FString Line : Lines)
+				{
+					Line.TrimStartAndEndInline();
+					if (Line.IsEmpty())
+					{
+						continue;
+					}
+					if (Line.StartsWith(TEXT("//")))
+					{
+						continue;
+					}
+					Line.ReplaceInline(TEXT(","), TEXT(""));
+					Line.ReplaceInline(TEXT("\""), TEXT(""));
+					Line.ReplaceInline(TEXT("\'"), TEXT(""));
+					Line.TrimStartAndEndInline();
+					if (!Line.IsEmpty() && !OutDependencies.Contains(Line))
+					{
+						OutDependencies.Add(Line);
+					}
+				}
+
+				SearchPos = ClosePos + 1;
+			}
+		};
+
+		ParseDependencyList(TEXT("PublicDependencyModuleNames.AddRange"), PublicDeps);
+		ParseDependencyList(TEXT("PrivateDependencyModuleNames.AddRange"), PrivateDeps);
+
+		if (PublicDeps.Num() == 0 && PrivateDeps.Num() == 0)
+		{
+			continue;
+		}
+
+		FString RelativePath = BuildCsPath;
+		FPaths::MakePathRelativeTo(RelativePath, *FPaths::ProjectDir());
+
+		TSharedPtr<FJsonObject> ModuleObj = MakeShared<FJsonObject>();
+		ModuleObj->SetStringField(TEXT("build_file"), RelativePath);
+		ModuleObj->SetStringField(TEXT("module_name"), FPaths::GetBaseFilename(BuildCsPath).Replace(TEXT(".Build"), TEXT("")));
+
+		TArray<TSharedPtr<FJsonValue>> PublicArray;
+		for (const FString& Dep : PublicDeps)
+		{
+			PublicArray.Add(MakeShared<FJsonValueString>(Dep));
+		}
+		ModuleObj->SetArrayField(TEXT("public_dependencies"), PublicArray);
+
+		TArray<TSharedPtr<FJsonValue>> PrivateArray;
+		for (const FString& Dep : PrivateDeps)
+		{
+			PrivateArray.Add(MakeShared<FJsonValueString>(Dep));
+		}
+		ModuleObj->SetArrayField(TEXT("private_dependencies"), PrivateArray);
+
+		ModulesArray.Add(MakeShared<FJsonValueObject>(ModuleObj));
+	}
+
+	TSharedPtr<FJsonObject> Data = MakeShared<FJsonObject>();
+	Data->SetStringField(TEXT("action"), TEXT("dependencies"));
+	Data->SetArrayField(TEXT("modules"), ModulesArray);
+	Data->SetNumberField(TEXT("count"), ModulesArray.Num());
+
+	return FMCPToolResult::Success(FString::Printf(TEXT("Retrieved dependency snapshot for %d modules."), ModulesArray.Num()), Data);
+}
+
+FMCPToolResult FMCPTool_ProjectInspect::ExecuteClassHierarchy(const TSharedRef<FJsonObject>& Params) const
+{
+	bool bForceRefresh = false;
+	if (Params->HasTypedField<EJson::Boolean>(TEXT("force_refresh")))
+	{
+		bForceRefresh = Params->GetBoolField(TEXT("force_refresh"));
+	}
+
+	const FProjectContext& Context = FProjectContextManager::Get().GetContext(bForceRefresh);
+
+	TArray<TSharedPtr<FJsonValue>> ClassesArray;
+	ClassesArray.Reserve(Context.UClasses.Num());
+
+	for (const FUClassInfo& ClassInfo : Context.UClasses)
+	{
+		TSharedPtr<FJsonObject> ClassObj = MakeShared<FJsonObject>();
+		ClassObj->SetStringField(TEXT("class_name"), ClassInfo.ClassName);
+		ClassObj->SetStringField(TEXT("parent_class"), ClassInfo.ParentClass);
+		ClassObj->SetStringField(TEXT("file_path"), ClassInfo.FilePath);
+		ClassObj->SetBoolField(TEXT("is_blueprint"), ClassInfo.bIsBlueprint);
+		ClassesArray.Add(MakeShared<FJsonValueObject>(ClassObj));
+	}
+
+	TSharedPtr<FJsonObject> Data = MakeShared<FJsonObject>();
+	Data->SetStringField(TEXT("action"), TEXT("class_hierarchy"));
+	Data->SetArrayField(TEXT("classes"), ClassesArray);
+	Data->SetNumberField(TEXT("count"), ClassesArray.Num());
+	Data->SetBoolField(TEXT("force_refresh"), bForceRefresh);
+
+	return FMCPToolResult::Success(FString::Printf(TEXT("Retrieved class hierarchy snapshot (%d classes)."), ClassesArray.Num()), Data);
 }
