@@ -21,6 +21,12 @@
 #include "Tracks/MovieSceneFadeTrack.h"
 #include "Tracks/MovieSceneLevelVisibilityTrack.h"
 #include "Tracks/MovieSceneSubTrack.h"
+#include "Subsystems/AssetEditorSubsystem.h"
+#include "Editor.h"
+#include "SequencerTools.h"
+#include "MovieSceneUserImportFBXSettings.h"
+#include "MovieSceneBindingProxy.h"
+#include "FbxExportOption.h"
 
 namespace
 {
@@ -441,5 +447,129 @@ FMCPToolResult FMCPTool_TextureListTextures::Execute(const TSharedRef<FJsonObjec
 
 	return FMCPToolResult::Success(
 		FString::Printf(TEXT("Found %d texture(s) in %s"), TextureItems.Num(), *Directory),
+		ResultData);
+}
+
+FMCPToolResult FMCPTool_SequencerOpen::Execute(const TSharedRef<FJsonObject>& Params)
+{
+	FString SequencePath;
+	if (!TryGetStringAlias(Params, { TEXT("sequence_path"), TEXT("sequencePath") }, SequencePath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: sequence_path (or sequencePath)"));
+	}
+
+	ULevelSequence* Sequence = LoadObject<ULevelSequence>(nullptr, *SequencePath);
+	if (!Sequence)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Level Sequence not found: %s"), *SequencePath));
+	}
+
+	UAssetEditorSubsystem* AssetEditorSubsystem = GEditor ? GEditor->GetEditorSubsystem<UAssetEditorSubsystem>() : nullptr;
+	if (!AssetEditorSubsystem)
+	{
+		return FMCPToolResult::Error(TEXT("Failed to acquire AssetEditorSubsystem"));
+	}
+
+	AssetEditorSubsystem->OpenEditorForAsset(Sequence);
+
+	TSharedPtr<FJsonObject> ResultData = MakeShared<FJsonObject>();
+	ResultData->SetStringField(TEXT("sequencePath"), SequencePath);
+	ResultData->SetStringField(TEXT("objectPath"), Sequence->GetPathName());
+
+	return FMCPToolResult::Success(
+		FString::Printf(TEXT("Opened sequence: %s"), *Sequence->GetName()),
+		ResultData);
+}
+
+FMCPToolResult FMCPTool_SequencerImportFbx::Execute(const TSharedRef<FJsonObject>& Params)
+{
+	FString SequencePath;
+	if (!TryGetStringAlias(Params, { TEXT("sequence_path"), TEXT("sequencePath") }, SequencePath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: sequence_path (or sequencePath)"));
+	}
+
+	FString FbxPath;
+	if (!TryGetStringAlias(Params, { TEXT("fbx_path"), TEXT("fbxPath") }, FbxPath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: fbx_path (or fbxPath)"));
+	}
+
+	ULevelSequence* Sequence = LoadObject<ULevelSequence>(nullptr, *SequencePath);
+	if (!Sequence)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Level Sequence not found: %s"), *SequencePath));
+	}
+
+	UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+	if (!World)
+	{
+		return FMCPToolResult::Error(TEXT("Failed to get editor world for FBX import"));
+	}
+
+	UMovieSceneUserImportFBXSettings* ImportOptions = NewObject<UMovieSceneUserImportFBXSettings>();
+	if (ImportOptions)
+	{
+		ImportOptions->bReduceKeys = false;
+	}
+
+	TArray<FMovieSceneBindingProxy> Bindings;
+	const bool bSuccess = USequencerToolsFunctionLibrary::ImportFBX(World, Sequence, Bindings, ImportOptions, FbxPath);
+	if (!bSuccess)
+	{
+		return FMCPToolResult::Error(
+			FString::Printf(TEXT("FBX import failed for sequence '%s' from '%s'"), *SequencePath, *FbxPath));
+	}
+
+	TSharedPtr<FJsonObject> ResultData = MakeShared<FJsonObject>();
+	ResultData->SetStringField(TEXT("sequencePath"), SequencePath);
+	ResultData->SetStringField(TEXT("fbxPath"), FbxPath);
+
+	return FMCPToolResult::Success(
+		FString::Printf(TEXT("Imported FBX into sequence: %s"), *Sequence->GetName()),
+		ResultData);
+}
+
+FMCPToolResult FMCPTool_SequencerExportFbx::Execute(const TSharedRef<FJsonObject>& Params)
+{
+	FString SequencePath;
+	if (!TryGetStringAlias(Params, { TEXT("sequence_path"), TEXT("sequencePath") }, SequencePath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: sequence_path (or sequencePath)"));
+	}
+
+	FString OutputPath;
+	if (!TryGetStringAlias(Params, { TEXT("output_path"), TEXT("outputPath") }, OutputPath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: output_path (or outputPath)"));
+	}
+
+	ULevelSequence* Sequence = LoadObject<ULevelSequence>(nullptr, *SequencePath);
+	if (!Sequence)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Level Sequence not found: %s"), *SequencePath));
+	}
+
+	UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+	if (!World)
+	{
+		return FMCPToolResult::Error(TEXT("Failed to get editor world for FBX export"));
+	}
+
+	UFbxExportOption* ExportOptions = NewObject<UFbxExportOption>();
+	TArray<FMovieSceneBindingProxy> Bindings;
+	const bool bSuccess = USequencerToolsFunctionLibrary::ExportFBX(World, Sequence, Bindings, ExportOptions, OutputPath);
+	if (!bSuccess)
+	{
+		return FMCPToolResult::Error(
+			FString::Printf(TEXT("FBX export failed for sequence '%s'"), *SequencePath));
+	}
+
+	TSharedPtr<FJsonObject> ResultData = MakeShared<FJsonObject>();
+	ResultData->SetStringField(TEXT("sequencePath"), SequencePath);
+	ResultData->SetStringField(TEXT("outputPath"), OutputPath);
+
+	return FMCPToolResult::Success(
+		FString::Printf(TEXT("Exported FBX from sequence: %s"), *Sequence->GetName()),
 		ResultData);
 }

@@ -64,7 +64,8 @@ public class UnrealCodex : ModuleRules
 				// Sequencer info tools
 				"LevelSequence",
 				"MovieScene",
-				"MovieSceneTracks"
+				"MovieSceneTracks",
+				"SequencerScriptingEditor"
 			}
 		);
 

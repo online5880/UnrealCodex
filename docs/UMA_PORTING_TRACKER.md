@@ -168,7 +168,7 @@
 - [x] `sequencer_add_binding.py`
 - [x] `sequencer_add_track.py`
 - [x] `sequencer_create.py`
-- [ ] `sequencer_open.py`
+- [x] `sequencer_open.py`
 - [ ] `setup_game_hud.py`
 - [ ] `setup_patrol_movement.py`
 - [ ] `setup_patrol_system.py`
@@ -223,8 +223,8 @@
 - [x] `physics_set_constraint.py`
 - [x] `physics_set_profile.py`
 - [ ] `refactor_rename_chain.py`
-- [ ] `sequencer_export_fbx.py`
-- [ ] `sequencer_import_fbx.py`
+- [x] `sequencer_export_fbx.py`
+- [x] `sequencer_import_fbx.py`
 - [ ] `sequencer_set_keyframe.py`
 - [ ] `texture_create_render_target.py`
 - [ ] `texture_import.py`
