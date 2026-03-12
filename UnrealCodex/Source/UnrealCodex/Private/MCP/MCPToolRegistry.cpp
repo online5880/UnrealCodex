@@ -309,6 +309,9 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 
 	// UMA compatibility wrappers: sequencer/texture tools
 	RegisterTool(MakeShared<FMCPTool_SequencerGetInfo>());
+	RegisterTool(MakeShared<FMCPTool_SequencerCreate>());
+	RegisterTool(MakeShared<FMCPTool_SequencerAddBinding>());
+	RegisterTool(MakeShared<FMCPTool_SequencerAddTrack>());
 	RegisterTool(MakeShared<FMCPTool_TextureGetInfo>());
 	RegisterTool(MakeShared<FMCPTool_TextureListTextures>());
 

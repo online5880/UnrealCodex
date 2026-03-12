@@ -63,7 +63,8 @@ public class UnrealCodex : ModuleRules
 				"EnhancedInput",
 				// Sequencer info tools
 				"LevelSequence",
-				"MovieScene"
+				"MovieScene",
+				"MovieSceneTracks"
 			}
 		);
 

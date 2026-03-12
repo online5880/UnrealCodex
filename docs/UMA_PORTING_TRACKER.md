@@ -165,9 +165,9 @@
 - [ ] `niagara_add_emitter.py`
 - [x] `pcg_add_node.py`
 - [x] `pcg_connect_nodes.py`
-- [ ] `sequencer_add_binding.py`
-- [ ] `sequencer_add_track.py`
-- [ ] `sequencer_create.py`
+- [x] `sequencer_add_binding.py`
+- [x] `sequencer_add_track.py`
+- [x] `sequencer_create.py`
 - [ ] `sequencer_open.py`
 - [ ] `setup_game_hud.py`
 - [ ] `setup_patrol_movement.py`
