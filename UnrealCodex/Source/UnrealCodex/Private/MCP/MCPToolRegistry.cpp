@@ -197,6 +197,7 @@ namespace
 #include "Tools/MCPTool_SourceControl.h"
 #include "Tools/MCPTool_SourceControlOps.h"
 #include "Tools/MCPTool_SourceControlUmaAliases.h"
+#include "Tools/MCPTool_SequencerTextureUma.h"
 
 // Task queue tools
 #include "Tools/MCPTool_TaskSubmit.h"
@@ -305,6 +306,11 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 	RegisterTool(MakeShared<FMCPTool_SourcecontrolStatus>());
 	RegisterTool(MakeShared<FMCPTool_SourcecontrolCheckout>());
 	RegisterTool(MakeShared<FMCPTool_SourcecontrolDiff>());
+
+	// UMA compatibility wrappers: sequencer/texture tools
+	RegisterTool(MakeShared<FMCPTool_SequencerGetInfo>());
+	RegisterTool(MakeShared<FMCPTool_TextureGetInfo>());
+	RegisterTool(MakeShared<FMCPTool_TextureListTextures>());
 
 	// Create and register async task queue tools
 	// Task queue takes a raw pointer since the registry always outlives it

@@ -115,12 +115,12 @@
 - [x] `project_settings.py` (대응: `project_inspect` action=settings)
 - [x] `project_snapshot.py` (대응: `project_context` full)
 - [x] `project_structure.py` (대응: `project_context` summary/full)
-- [ ] `sequencer_get_info.py`
+- [x] `sequencer_get_info.py`
 - [x] `sourcecontrol_status.py` (대응: `source_control_status` + `sourcecontrol_status`)
 - [x] `sourcecontrol_checkout.py` (대응: `source_control_checkout` + `sourcecontrol_checkout`)
 - [x] `sourcecontrol_diff.py` (대응: `source_control_diff` + `sourcecontrol_diff`)
-- [ ] `texture_get_info.py`
-- [ ] `texture_list_textures.py`
+- [x] `texture_get_info.py`
+- [x] `texture_list_textures.py`
 - [ ] `widget_add_element.py`
 - [ ] `widget_create.py`
 - [ ] `widget_get_bindings.py`

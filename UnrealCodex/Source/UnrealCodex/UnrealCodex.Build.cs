@@ -60,7 +60,10 @@ public class UnrealCodex : ModuleRules
 				// Asset saving
 				"EditorScriptingUtilities",
 				// Enhanced Input
-				"EnhancedInput"
+				"EnhancedInput",
+				// Sequencer info tools
+				"LevelSequence",
+				"MovieScene"
 			}
 		);
 
