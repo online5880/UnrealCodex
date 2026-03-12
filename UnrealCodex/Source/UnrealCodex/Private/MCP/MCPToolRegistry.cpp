@@ -142,6 +142,7 @@ namespace
 #include "Tools/MCPTool_Asset.h"
 #include "Tools/MCPTool_OpenLevel.h"
 #include "Tools/MCPTool_SourceControl.h"
+#include "Tools/MCPTool_SourceControlOps.h"
 
 // Task queue tools
 #include "Tools/MCPTool_TaskSubmit.h"
@@ -229,6 +230,9 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 
 	// Source control tools
 	RegisterTool(MakeShared<FMCPTool_SourceControl>());
+	RegisterTool(MakeShared<FMCPTool_SourceControlStatus>());
+	RegisterTool(MakeShared<FMCPTool_SourceControlCheckout>());
+	RegisterTool(MakeShared<FMCPTool_SourceControlDiff>());
 
 	// Create and register async task queue tools
 	// Task queue takes a raw pointer since the registry always outlives it

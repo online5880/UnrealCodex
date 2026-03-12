@@ -11,8 +11,19 @@
 
 FMCPToolResult FMCPTool_SourceControl::Execute(const TSharedRef<FJsonObject>& Params)
 {
-	const FString Action = ExtractRequiredString(Params, TEXT("action")).ToLower();
-	const FString FilePath = ExtractRequiredString(Params, TEXT("file"));
+	FString Action;
+	FString FilePath;
+	TOptional<FMCPToolResult> ParamError;
+	if (!ExtractRequiredString(Params, TEXT("action"), Action, ParamError))
+	{
+		return ParamError.GetValue();
+	}
+	if (!ExtractRequiredString(Params, TEXT("file"), FilePath, ParamError))
+	{
+		return ParamError.GetValue();
+	}
+
+	Action = Action.ToLower();
 	const FString AbsolutePath = ResolveToAbsolutePath(FilePath);
 
 	if (!FPaths::FileExists(AbsolutePath))
