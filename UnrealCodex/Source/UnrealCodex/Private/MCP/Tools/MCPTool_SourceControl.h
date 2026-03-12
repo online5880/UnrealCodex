@@ -22,7 +22,8 @@ public:
 		);
 		Info.Parameters = {
 			FMCPToolParameter(TEXT("action"), TEXT("string"), TEXT("Operation to run: status | checkout | diff"), true),
-			FMCPToolParameter(TEXT("file"), TEXT("string"), TEXT("Project-relative or absolute file path"), true)
+			FMCPToolParameter(TEXT("file"), TEXT("string"), TEXT("Project-relative or absolute file path"), true),
+			FMCPToolParameter(TEXT("max_chars"), TEXT("number"), TEXT("For diff action: max number of characters to return (default: 12000, max: 100000)"), false, TEXT("12000"))
 		};
 		Info.Annotations = FMCPToolAnnotations::Modifying();
 		Info.Annotations.bDestructiveHint = false;
@@ -36,5 +37,14 @@ private:
 	FString ToProjectRelativePath(const FString& AbsolutePath) const;
 	FMCPToolResult RunStatus(const FString& AbsolutePath) const;
 	FMCPToolResult RunCheckout(const FString& AbsolutePath) const;
-	FMCPToolResult RunDiff(const FString& AbsolutePath) const;
+	FMCPToolResult RunDiff(const FString& AbsolutePath, int32 MaxChars) const;
+
+	static FString BuildStatusSummary(
+		bool bIsSourceControlled,
+		bool bIsCheckedOut,
+		bool bIsAdded,
+		bool bIsDeleted,
+		bool bIsModified,
+		bool bIsCurrent
+	);
 };
