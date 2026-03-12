@@ -183,6 +183,7 @@ namespace
 #include "Tools/MCPTool_Material.h"
 #include "Tools/MCPTool_Asset.h"
 #include "Tools/MCPTool_OpenLevel.h"
+#include "Tools/MCPTool_ProjectContext.h"
 #include "Tools/MCPTool_SourceControl.h"
 #include "Tools/MCPTool_SourceControlOps.h"
 
@@ -269,6 +270,9 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 
 	// Level management tools
 	RegisterTool(MakeShared<FMCPTool_OpenLevel>());
+
+	// Project context tools
+	RegisterTool(MakeShared<FMCPTool_ProjectContext>());
 
 	// Source control tools
 	RegisterTool(MakeShared<FMCPTool_SourceControl>());

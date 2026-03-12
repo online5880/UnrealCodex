@@ -11,6 +11,7 @@
 - [x] SourceControl 통합 툴: `source_control` (status/checkout/diff)
 - [x] SourceControl 분리 툴: `source_control_status`, `source_control_checkout`, `source_control_diff`
 - [x] source_control 응답 표준화 + diff `max_chars` 지원
+- [x] Project context 조회 툴 추가: `project_context` (summary/full)
 
 ### 관련 커밋
 - `b84fe79`
