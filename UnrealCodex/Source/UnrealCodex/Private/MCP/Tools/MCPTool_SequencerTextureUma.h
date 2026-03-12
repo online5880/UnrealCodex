@@ -159,6 +159,79 @@ public:
 	virtual FMCPToolResult Execute(const TSharedRef<FJsonObject>& Params) override;
 };
 
+/** UMA-compatible sequencer_set_keyframe tool. */
+class FMCPTool_SequencerSetKeyframe : public FMCPToolBase
+{
+public:
+	virtual FMCPToolInfo GetInfo() const override
+	{
+		FMCPToolInfo Info;
+		Info.Name = TEXT("sequencer_set_keyframe");
+		Info.Description = TEXT("Set keyframe metadata on a named master track in a Level Sequence.");
+		Info.Parameters = {
+			FMCPToolParameter(TEXT("sequence_path"), TEXT("string"), TEXT("Level Sequence asset path."), false),
+			FMCPToolParameter(TEXT("sequencePath"), TEXT("string"), TEXT("Alias for sequence_path (UMA compatibility)."), false),
+			FMCPToolParameter(TEXT("track_name"), TEXT("string"), TEXT("Track display name or class name to target."), false),
+			FMCPToolParameter(TEXT("trackName"), TEXT("string"), TEXT("Alias for track_name (UMA compatibility)."), false),
+			FMCPToolParameter(TEXT("time"), TEXT("number"), TEXT("Time in seconds."), true),
+			FMCPToolParameter(TEXT("value"), TEXT("any"), TEXT("Optional keyframe value payload (tool returns it for UMA compatibility)."), false)
+		};
+		Info.Annotations = FMCPToolAnnotations::Destructive();
+		return Info;
+	}
+
+	virtual FMCPToolResult Execute(const TSharedRef<FJsonObject>& Params) override;
+};
+
+/** UMA-compatible texture_create_render_target tool. */
+class FMCPTool_TextureCreateRenderTarget : public FMCPToolBase
+{
+public:
+	virtual FMCPToolInfo GetInfo() const override
+	{
+		FMCPToolInfo Info;
+		Info.Name = TEXT("texture_create_render_target");
+		Info.Description = TEXT("Create a TextureRenderTarget2D asset.");
+		Info.Parameters = {
+			FMCPToolParameter(TEXT("asset_name"), TEXT("string"), TEXT("Name of the new render target asset."), false),
+			FMCPToolParameter(TEXT("assetName"), TEXT("string"), TEXT("Alias for asset_name (UMA compatibility)."), false),
+			FMCPToolParameter(TEXT("asset_path"), TEXT("string"), TEXT("Destination content path (e.g. /Game/Textures)."), false),
+			FMCPToolParameter(TEXT("assetPath"), TEXT("string"), TEXT("Alias for asset_path (UMA compatibility)."), false),
+			FMCPToolParameter(TEXT("width"), TEXT("number"), TEXT("Render target width in pixels."), true),
+			FMCPToolParameter(TEXT("height"), TEXT("number"), TEXT("Render target height in pixels."), true),
+			FMCPToolParameter(TEXT("format"), TEXT("string"), TEXT("Optional format: R8G8B8A8, RGBA16f, RGBA32f, R16f, R32f, RG8, RG16f."), false, TEXT("RGBA16f"))
+		};
+		Info.Annotations = FMCPToolAnnotations::Destructive();
+		return Info;
+	}
+
+	virtual FMCPToolResult Execute(const TSharedRef<FJsonObject>& Params) override;
+};
+
+/** UMA-compatible texture_import tool. */
+class FMCPTool_TextureImport : public FMCPToolBase
+{
+public:
+	virtual FMCPToolInfo GetInfo() const override
+	{
+		FMCPToolInfo Info;
+		Info.Name = TEXT("texture_import");
+		Info.Description = TEXT("Import a texture file into the project.");
+		Info.Parameters = {
+			FMCPToolParameter(TEXT("file_path"), TEXT("string"), TEXT("Absolute source file path."), false),
+			FMCPToolParameter(TEXT("filePath"), TEXT("string"), TEXT("Alias for file_path (UMA compatibility)."), false),
+			FMCPToolParameter(TEXT("destination_path"), TEXT("string"), TEXT("Destination content folder (e.g. /Game/Textures)."), false),
+			FMCPToolParameter(TEXT("destinationPath"), TEXT("string"), TEXT("Alias for destination_path (UMA compatibility)."), false),
+			FMCPToolParameter(TEXT("asset_name"), TEXT("string"), TEXT("Optional destination asset name override."), false),
+			FMCPToolParameter(TEXT("assetName"), TEXT("string"), TEXT("Alias for asset_name (UMA compatibility)."), false)
+		};
+		Info.Annotations = FMCPToolAnnotations::Destructive();
+		return Info;
+	}
+
+	virtual FMCPToolResult Execute(const TSharedRef<FJsonObject>& Params) override;
+};
+
 /** UMA-compatible texture_get_info tool. */
 class FMCPTool_TextureGetInfo : public FMCPToolBase
 {

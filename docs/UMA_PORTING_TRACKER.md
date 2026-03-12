@@ -225,9 +225,9 @@
 - [ ] `refactor_rename_chain.py`
 - [x] `sequencer_export_fbx.py`
 - [x] `sequencer_import_fbx.py`
-- [ ] `sequencer_set_keyframe.py`
-- [ ] `texture_create_render_target.py`
-- [ ] `texture_import.py`
+- [x] `sequencer_set_keyframe.py`
+- [x] `texture_create_render_target.py`
+- [x] `texture_import.py`
 - [ ] `texture_set_compression.py`
 - [ ] `workflow_create_character.py`
 - [ ] `workflow_create_dialogue_system.py`

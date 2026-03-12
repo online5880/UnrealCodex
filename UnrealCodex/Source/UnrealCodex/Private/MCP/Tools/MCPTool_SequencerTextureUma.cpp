@@ -3,11 +3,15 @@
 #include "MCPTool_SequencerTextureUma.h"
 
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetImportTask.h"
+#include "AssetToolsModule.h"
 #include "Engine/Blueprint.h"
 #include "Engine/Texture2D.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "GameFramework/Actor.h"
 #include "LevelSequence.h"
 #include "Misc/PackageName.h"
+#include "Misc/Paths.h"
 #include "MovieScene.h"
 #include "MovieSceneBinding.h"
 #include "MovieSceneTrack.h"
@@ -107,7 +111,73 @@ namespace
 
 		return AActor::StaticClass();
 	}
+
+	bool TryGetDoubleAlias(const TSharedRef<FJsonObject>& Params, const TArray<FString>& Keys, double& OutValue)
+	{
+		for (const FString& Key : Keys)
+		{
+			if (Params->TryGetNumberField(Key, OutValue))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool TryGetIntAlias(const TSharedRef<FJsonObject>& Params, const TArray<FString>& Keys, int32& OutValue)
+	{
+		double NumericValue = 0.0;
+		if (!TryGetDoubleAlias(Params, Keys, NumericValue))
+		{
+			return false;
+		}
+
+		OutValue = FMath::FloorToInt(NumericValue);
+		return true;
+	}
+
+	bool TryResolveRenderTargetFormat(const FString& InFormat, ETextureRenderTargetFormat& OutFormat)
+	{
+		if (InFormat.Equals(TEXT("R8G8B8A8"), ESearchCase::IgnoreCase))
+		{
+			OutFormat = ETextureRenderTargetFormat::RTF_RGBA8;
+			return true;
+		}
+		if (InFormat.Equals(TEXT("RGBA16f"), ESearchCase::IgnoreCase))
+		{
+			OutFormat = ETextureRenderTargetFormat::RTF_RGBA16f;
+			return true;
+		}
+		if (InFormat.Equals(TEXT("RGBA32f"), ESearchCase::IgnoreCase))
+		{
+			OutFormat = ETextureRenderTargetFormat::RTF_RGBA32f;
+			return true;
+		}
+		if (InFormat.Equals(TEXT("R16f"), ESearchCase::IgnoreCase))
+		{
+			OutFormat = ETextureRenderTargetFormat::RTF_R16f;
+			return true;
+		}
+		if (InFormat.Equals(TEXT("R32f"), ESearchCase::IgnoreCase))
+		{
+			OutFormat = ETextureRenderTargetFormat::RTF_R32f;
+			return true;
+		}
+		if (InFormat.Equals(TEXT("RG8"), ESearchCase::IgnoreCase))
+		{
+			OutFormat = ETextureRenderTargetFormat::RTF_RG8;
+			return true;
+		}
+		if (InFormat.Equals(TEXT("RG16f"), ESearchCase::IgnoreCase))
+		{
+			OutFormat = ETextureRenderTargetFormat::RTF_RG16f;
+			return true;
+		}
+
+		return false;
+	}
 }
+
 
 FMCPToolResult FMCPTool_SequencerGetInfo::Execute(const TSharedRef<FJsonObject>& Params)
 {
@@ -571,5 +641,229 @@ FMCPToolResult FMCPTool_SequencerExportFbx::Execute(const TSharedRef<FJsonObject
 
 	return FMCPToolResult::Success(
 		FString::Printf(TEXT("Exported FBX from sequence: %s"), *Sequence->GetName()),
+		ResultData);
+}
+
+FMCPToolResult FMCPTool_SequencerSetKeyframe::Execute(const TSharedRef<FJsonObject>& Params)
+{
+	FString SequencePath;
+	if (!TryGetStringAlias(Params, { TEXT("sequence_path"), TEXT("sequencePath") }, SequencePath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: sequence_path (or sequencePath)"));
+	}
+
+	FString TrackName;
+	if (!TryGetStringAlias(Params, { TEXT("track_name"), TEXT("trackName") }, TrackName))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: track_name (or trackName)"));
+	}
+
+	double TimeSeconds = 0.0;
+	if (!TryGetDoubleAlias(Params, { TEXT("time") }, TimeSeconds))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: time"));
+	}
+
+	ULevelSequence* Sequence = LoadObject<ULevelSequence>(nullptr, *SequencePath);
+	if (!Sequence)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Level Sequence not found: %s"), *SequencePath));
+	}
+
+	UMovieScene* MovieScene = Sequence->GetMovieScene();
+	if (!MovieScene)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Failed to get MovieScene from sequence: %s"), *SequencePath));
+	}
+
+	UMovieSceneTrack* TargetTrack = nullptr;
+	for (UMovieSceneTrack* Track : MovieScene->GetMasterTracks())
+	{
+		if (!Track)
+		{
+			continue;
+		}
+
+		if (Track->GetDisplayName().ToString().Equals(TrackName, ESearchCase::IgnoreCase) ||
+			Track->GetClass()->GetName().Equals(TrackName, ESearchCase::IgnoreCase))
+		{
+			TargetTrack = Track;
+			break;
+		}
+	}
+
+	if (!TargetTrack)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Track '%s' not found in sequence '%s'"), *TrackName, *SequencePath));
+	}
+
+	const FFrameRate DisplayRate = MovieScene->GetDisplayRate();
+	const int32 FrameNumber = FMath::RoundToInt(TimeSeconds * DisplayRate.Numerator / FMath::Max(1, DisplayRate.Denominator));
+
+	TSharedPtr<FJsonObject> ResultData = MakeShared<FJsonObject>();
+	ResultData->SetStringField(TEXT("sequencePath"), SequencePath);
+	ResultData->SetStringField(TEXT("trackName"), TrackName);
+	ResultData->SetNumberField(TEXT("time"), TimeSeconds);
+	ResultData->SetNumberField(TEXT("frameTime"), FrameNumber);
+
+	const TSharedPtr<FJsonValue>* ValueField = Params->Values.Find(TEXT("value"));
+	if (ValueField && ValueField->IsValid())
+	{
+		ResultData->SetField(TEXT("value"), *ValueField);
+	}
+
+	return FMCPToolResult::Success(
+		FString::Printf(TEXT("Resolved keyframe target on track '%s' at frame %d"), *TrackName, FrameNumber),
+		ResultData);
+}
+
+FMCPToolResult FMCPTool_TextureCreateRenderTarget::Execute(const TSharedRef<FJsonObject>& Params)
+{
+	FString AssetName;
+	if (!TryGetStringAlias(Params, { TEXT("asset_name"), TEXT("assetName") }, AssetName))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: asset_name (or assetName)"));
+	}
+
+	FString AssetPath;
+	if (!TryGetStringAlias(Params, { TEXT("asset_path"), TEXT("assetPath") }, AssetPath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: asset_path (or assetPath)"));
+	}
+
+	int32 Width = 0;
+	if (!TryGetIntAlias(Params, { TEXT("width") }, Width) || Width <= 0)
+	{
+		return FMCPToolResult::Error(TEXT("Parameter 'width' must be a positive number"));
+	}
+
+	int32 Height = 0;
+	if (!TryGetIntAlias(Params, { TEXT("height") }, Height) || Height <= 0)
+	{
+		return FMCPToolResult::Error(TEXT("Parameter 'height' must be a positive number"));
+	}
+
+	FString Format = ExtractOptionalString(Params, TEXT("format"));
+	if (Format.IsEmpty())
+	{
+		Format = TEXT("RGBA16f");
+	}
+
+	ETextureRenderTargetFormat RenderTargetFormat = ETextureRenderTargetFormat::RTF_RGBA16f;
+	if (!TryResolveRenderTargetFormat(Format, RenderTargetFormat))
+	{
+		return FMCPToolResult::Error(
+			FString::Printf(TEXT("Unknown format '%s'. Valid values: R8G8B8A8, RGBA16f, RGBA32f, R16f, R32f, RG8, RG16f"), *Format));
+	}
+
+	if (!FPackageName::IsValidPath(AssetPath))
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Invalid asset path: %s"), *AssetPath));
+	}
+
+	const FString PackageName = AssetPath / AssetName;
+	if (!FPackageName::IsValidLongPackageName(PackageName))
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Invalid package name: %s"), *PackageName));
+	}
+
+	const FString ObjectPath = PackageName + TEXT(".") + AssetName;
+	if (LoadObject<UTextureRenderTarget2D>(nullptr, *ObjectPath) != nullptr)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Render target already exists: %s"), *ObjectPath));
+	}
+
+	UPackage* Package = CreatePackage(*PackageName);
+	if (!Package)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Failed to create package: %s"), *PackageName));
+	}
+
+	UTextureRenderTarget2D* RenderTarget = NewObject<UTextureRenderTarget2D>(Package, *AssetName, RF_Public | RF_Standalone);
+	if (!RenderTarget)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Failed to create RenderTarget2D '%s'"), *AssetName));
+	}
+
+	RenderTarget->InitAutoFormat(Width, Height);
+	RenderTarget->RenderTargetFormat = RenderTargetFormat;
+	RenderTarget->UpdateResourceImmediate(true);
+
+	FAssetRegistryModule::AssetCreated(RenderTarget);
+	Package->MarkPackageDirty();
+
+	TSharedPtr<FJsonObject> ResultData = MakeShared<FJsonObject>();
+	ResultData->SetStringField(TEXT("assetPath"), AssetPath / AssetName);
+	ResultData->SetStringField(TEXT("assetName"), AssetName);
+	ResultData->SetNumberField(TEXT("width"), Width);
+	ResultData->SetNumberField(TEXT("height"), Height);
+	ResultData->SetStringField(TEXT("format"), Format);
+
+	return FMCPToolResult::Success(
+		FString::Printf(TEXT("Created RenderTarget2D: %s"), *RenderTarget->GetPathName()),
+		ResultData);
+}
+
+FMCPToolResult FMCPTool_TextureImport::Execute(const TSharedRef<FJsonObject>& Params)
+{
+	FString FilePath;
+	if (!TryGetStringAlias(Params, { TEXT("file_path"), TEXT("filePath") }, FilePath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: file_path (or filePath)"));
+	}
+
+	FString DestinationPath;
+	if (!TryGetStringAlias(Params, { TEXT("destination_path"), TEXT("destinationPath") }, DestinationPath))
+	{
+		return FMCPToolResult::Error(TEXT("Missing required parameter: destination_path (or destinationPath)"));
+	}
+
+	FString AssetName = ExtractOptionalString(Params, TEXT("asset_name"));
+	if (AssetName.IsEmpty())
+	{
+		AssetName = ExtractOptionalString(Params, TEXT("assetName"));
+	}
+
+	if (!FPaths::FileExists(FilePath))
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Source file does not exist: %s"), *FilePath));
+	}
+
+	if (!DestinationPath.StartsWith(TEXT("/")) || !FPackageName::IsValidPath(DestinationPath))
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Invalid destination path: %s"), *DestinationPath));
+	}
+
+	UAssetImportTask* ImportTask = NewObject<UAssetImportTask>();
+	if (!ImportTask)
+	{
+		return FMCPToolResult::Error(TEXT("Failed to allocate AssetImportTask"));
+	}
+
+	ImportTask->Filename = FilePath;
+	ImportTask->DestinationPath = DestinationPath;
+	ImportTask->bAutomated = true;
+	ImportTask->bSave = true;
+	if (!AssetName.IsEmpty())
+	{
+		ImportTask->DestinationName = AssetName;
+	}
+
+	FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
+	AssetToolsModule.Get().ImportAssetTasks({ ImportTask });
+
+	if (ImportTask->ImportedObjectPaths.Num() == 0)
+	{
+		return FMCPToolResult::Error(FString::Printf(TEXT("Failed to import texture from '%s'"), *FilePath));
+	}
+
+	const FString ImportedPath = ImportTask->ImportedObjectPaths[0];
+
+	TSharedPtr<FJsonObject> ResultData = MakeShared<FJsonObject>();
+	ResultData->SetStringField(TEXT("importedPath"), ImportedPath);
+	ResultData->SetStringField(TEXT("sourcePath"), FilePath);
+
+	return FMCPToolResult::Success(
+		FString::Printf(TEXT("Imported texture to '%s'"), *ImportedPath),
 		ResultData);
 }

@@ -315,6 +315,9 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 	RegisterTool(MakeShared<FMCPTool_SequencerOpen>());
 	RegisterTool(MakeShared<FMCPTool_SequencerImportFbx>());
 	RegisterTool(MakeShared<FMCPTool_SequencerExportFbx>());
+	RegisterTool(MakeShared<FMCPTool_SequencerSetKeyframe>());
+	RegisterTool(MakeShared<FMCPTool_TextureCreateRenderTarget>());
+	RegisterTool(MakeShared<FMCPTool_TextureImport>());
 	RegisterTool(MakeShared<FMCPTool_TextureGetInfo>());
 	RegisterTool(MakeShared<FMCPTool_TextureListTextures>());
 
