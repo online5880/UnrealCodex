@@ -4,7 +4,10 @@
 #include "MCPTaskQueue.h"
 #include "UnrealCodexModule.h"
 #include "UnrealCodexConstants.h"
+#include "ScriptPermissionDialog.h"
 #include "Containers/Ticker.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
 
 namespace
 {
@@ -57,9 +60,9 @@ namespace
 	 * Safety hook for destructive tools.
 	 *
 	 * Behavior:
-	 * - If tool is destructive and explicitly supports approval params (confirm/force),
-	 *   require one of them to be true.
-	 * - If tool is destructive but has no approval param, only log a warning (non-breaking).
+	 * - If confirm/force/__approved is true, proceed immediately.
+	 * - Otherwise show a modal approval dialog to the user.
+	 * - Deny execution when user rejects or the dialog can't be shown.
 	 */
 	class FMCPSafetyHook final : public IMCPToolHook
 	{
@@ -71,23 +74,21 @@ namespace
 				return true;
 			}
 
-			const bool bHasConfirmParam = HasParam(ToolInfo, TEXT("confirm"));
-			const bool bHasForceParam = HasParam(ToolInfo, TEXT("force"));
-			if (!bHasConfirmParam && !bHasForceParam)
-			{
-				UE_LOG(LogUnrealCodex, Warning, TEXT("[MCP Safety] Destructive tool '%s' executed without explicit approval parameter support"), *ToolInfo.Name);
-				return true;
-			}
-
-			const bool bApproved =
+			const bool bApprovedByParam =
 				GetBoolParam(Params, TEXT("confirm")) ||
 				GetBoolParam(Params, TEXT("force")) ||
 				GetBoolParam(Params, TEXT("__approved"));
 
-			if (!bApproved)
+			if (bApprovedByParam)
+			{
+				return true;
+			}
+
+			const bool bApprovedByUser = RequestUserApproval(ToolInfo, Params);
+			if (!bApprovedByUser)
 			{
 				OutResult = FMCPToolResult::Error(FString::Printf(
-					TEXT("Tool '%s' is destructive. Re-run with confirm=true (or force=true)."),
+					TEXT("Tool '%s' execution denied. Approval required for destructive operations."),
 					*ToolInfo.Name
 				));
 				return false;
@@ -97,22 +98,63 @@ namespace
 		}
 
 	private:
-		static bool HasParam(const FMCPToolInfo& ToolInfo, const FString& ParamName)
-		{
-			for (const FMCPToolParameter& Param : ToolInfo.Parameters)
-			{
-				if (Param.Name.Equals(ParamName, ESearchCase::IgnoreCase))
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-
 		static bool GetBoolParam(const TSharedRef<FJsonObject>& Params, const FString& ParamName)
 		{
 			bool bValue = false;
 			return Params->TryGetBoolField(ParamName, bValue) && bValue;
+		}
+
+		static FString BuildPreview(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params)
+		{
+			FString ParamsJson;
+			TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&ParamsJson);
+			FJsonSerializer::Serialize(Params, Writer);
+
+			return FString::Printf(
+				TEXT("Tool: %s\n\nDescription:\n%s\n\nParameters:\n%s"),
+				*ToolInfo.Name,
+				*ToolInfo.Description,
+				*ParamsJson
+			);
+		}
+
+		static bool RequestUserApproval(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params)
+		{
+			const FString Preview = BuildPreview(ToolInfo, Params);
+			const FString Description = FString::Printf(TEXT("Destructive MCP tool '%s' requested."), *ToolInfo.Name);
+
+			if (IsInGameThread())
+			{
+				return FScriptPermissionDialog::Show(Preview, EScriptType::EditorUtility, Description);
+			}
+
+			// Non-game thread: dispatch to game thread and wait.
+			TSharedPtr<bool, ESPMode::ThreadSafe> bApproved = MakeShared<bool, ESPMode::ThreadSafe>(false);
+			TSharedPtr<TAtomic<bool>, ESPMode::ThreadSafe> bCompleted = MakeShared<TAtomic<bool>, ESPMode::ThreadSafe>(false);
+			TSharedPtr<FEvent, ESPMode::ThreadSafe> CompletionEvent = MakeShareable(
+				FPlatformProcess::GetSynchEventFromPool(),
+				[](FEvent* Event) { FPlatformProcess::ReturnSynchEventToPool(Event); }
+			);
+
+			FTSTicker::GetCoreTicker().AddTicker(TEXT("MCPTool_ApprovalDialog"), 0.0f,
+				[bApproved, bCompleted, CompletionEvent, Preview, Description](float) -> bool
+				{
+					*bApproved = FScriptPermissionDialog::Show(Preview, EScriptType::EditorUtility, Description);
+					*bCompleted = true;
+					CompletionEvent->Trigger();
+					return false;
+				}
+			);
+
+			const uint32 TimeoutMs = 60000; // 60s for user decision
+			const bool bSignaled = CompletionEvent->Wait(TimeoutMs);
+			if (!bSignaled || !(*bCompleted))
+			{
+				UE_LOG(LogUnrealCodex, Warning, TEXT("[MCP Safety] Approval dialog timeout for tool '%s'"), *ToolInfo.Name);
+				return false;
+			}
+
+			return *bApproved;
 		}
 	};
 }
