@@ -188,7 +188,10 @@ namespace
 #include "Tools/MCPTool_PCGGetInfo.h"
 #include "Tools/MCPTool_PCGAddNode.h"
 #include "Tools/MCPTool_PCGConnectNodes.h"
+#include "Tools/MCPTool_PCGCreateGraph.h"
 #include "Tools/MCPTool_PhysicsGetInfo.h"
+#include "Tools/MCPTool_PhysicsCreateAsset.h"
+#include "Tools/MCPTool_PhysicsCreateMaterial.h"
 #include "Tools/MCPTool_SourceControl.h"
 #include "Tools/MCPTool_SourceControlOps.h"
 
@@ -284,7 +287,10 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 	RegisterTool(MakeShared<FMCPTool_PCGGetInfo>());
 	RegisterTool(MakeShared<FMCPTool_PCGAddNode>());
 	RegisterTool(MakeShared<FMCPTool_PCGConnectNodes>());
+	RegisterTool(MakeShared<FMCPTool_PCGCreateGraph>());
 	RegisterTool(MakeShared<FMCPTool_PhysicsGetInfo>());
+	RegisterTool(MakeShared<FMCPTool_PhysicsCreateAsset>());
+	RegisterTool(MakeShared<FMCPTool_PhysicsCreateMaterial>());
 
 	// Source control tools
 	RegisterTool(MakeShared<FMCPTool_SourceControl>());

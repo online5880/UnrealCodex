@@ -107,8 +107,8 @@
 - [ ] `mesh_info.py`
 - [ ] `niagara_get_info.py`
 - [ ] `niagara_list_systems.py`
-- [ ] `pcg_get_info.py`
-- [ ] `physics_get_info.py`
+- [x] `pcg_get_info.py`
+- [x] `physics_get_info.py`
 - [x] `project_class_hierarchy.py` (대응: `project_inspect` action=class_hierarchy)
 - [x] `project_dependencies.py` (대응: `project_inspect` action=dependencies)
 - [x] `project_plugins.py` (대응: `project_inspect` action=plugins)
@@ -161,8 +161,8 @@
 - [ ] `mesh_collision.py`
 - [ ] `mesh_lod.py`
 - [ ] `niagara_add_emitter.py`
-- [ ] `pcg_add_node.py`
-- [ ] `pcg_connect_nodes.py`
+- [x] `pcg_add_node.py`
+- [x] `pcg_connect_nodes.py`
 - [ ] `sequencer_add_binding.py`
 - [ ] `sequencer_add_track.py`
 - [ ] `sequencer_create.py`
@@ -215,9 +215,9 @@
 - [ ] `niagara_compile.py`
 - [ ] `niagara_create_system.py`
 - [ ] `niagara_set_parameter.py`
-- [ ] `pcg_create_graph.py`
-- [ ] `physics_create_asset.py`
-- [ ] `physics_create_material.py`
+- [x] `pcg_create_graph.py`
+- [x] `physics_create_asset.py`
+- [x] `physics_create_material.py`
 - [ ] `physics_set_constraint.py`
 - [ ] `physics_set_profile.py`
 - [ ] `refactor_rename_chain.py`
@@ -247,3 +247,6 @@
 - 초기 문서 생성
 - project_inspect 확장: `dependencies`, `class_hierarchy` 액션 추가 (project_dependencies.py / project_class_hierarchy.py 대응)
 - 신규 MCP read-only 툴 추가: `pcg_get_info`, `physics_get_info` (pcg_get_info.py / physics_get_info.py 대응)
+- 신규 MCP 툴 추가: `pcg_add_node`, `pcg_connect_nodes` (pcg_add_node.py / pcg_connect_nodes.py 대응)
+- 신규 MCP 툴 추가: `pcg_create_graph`, `physics_create_asset`, `physics_create_material` (pcg_create_graph.py / physics_create_asset.py / physics_create_material.py 대응)
+- 검증 상태: 현재 환경에서 UE 5.7 런타임 검증은 미실시(코드 이식 완료, 에디터 실행 후 호출 테스트 필요)
