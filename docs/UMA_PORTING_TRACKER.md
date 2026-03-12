@@ -109,8 +109,8 @@
 - [ ] `niagara_list_systems.py`
 - [ ] `pcg_get_info.py`
 - [ ] `physics_get_info.py`
-- [ ] `project_class_hierarchy.py`
-- [ ] `project_dependencies.py` (부분 대응 예정: `project_inspect` 확장 필요)
+- [x] `project_class_hierarchy.py` (대응: `project_inspect` action=class_hierarchy)
+- [x] `project_dependencies.py` (대응: `project_inspect` action=dependencies)
 - [x] `project_plugins.py` (대응: `project_inspect` action=plugins)
 - [x] `project_settings.py` (대응: `project_inspect` action=settings)
 - [x] `project_snapshot.py` (대응: `project_context` full)
@@ -245,3 +245,4 @@
 
 ## 7) 변경 이력
 - 초기 문서 생성
+- project_inspect 확장: `dependencies`, `class_hierarchy` 액션 추가 (project_dependencies.py / project_class_hierarchy.py 대응)
