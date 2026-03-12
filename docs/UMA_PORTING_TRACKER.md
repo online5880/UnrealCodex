@@ -112,10 +112,10 @@
 - [ ] `project_dependencies.py`
 - [ ] `project_plugins.py`
 - [ ] `project_settings.py`
-- [ ] `project_snapshot.py`
-- [ ] `project_structure.py`
+- [x] `project_snapshot.py` (대응: `project_context` full)
+- [x] `project_structure.py` (대응: `project_context` summary/full)
 - [ ] `sequencer_get_info.py`
-- [ ] `sourcecontrol_status.py`
+- [x] `sourcecontrol_status.py` (대응: `source_control_status`)
 - [ ] `texture_get_info.py`
 - [ ] `texture_list_textures.py`
 - [ ] `widget_add_element.py`
