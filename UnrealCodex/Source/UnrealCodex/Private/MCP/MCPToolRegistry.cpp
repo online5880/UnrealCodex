@@ -14,23 +14,105 @@ namespace
 	class FMCPLoggingHook final : public IMCPToolHook
 	{
 	public:
-		virtual bool BeforeExecute(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& /*OutResult*/) override
+		virtual bool BeforeExecute(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params, FMCPToolResult& /*OutResult*/) override
 		{
-			UE_LOG(LogUnrealCodex, Verbose, TEXT("[MCP Hook] BeforeExecute: %s (paramCount=%d)"), *ToolName, Params->Values.Num());
+			UE_LOG(LogUnrealCodex, Verbose, TEXT("[MCP Hook] BeforeExecute: %s (paramCount=%d)"), *ToolInfo.Name, Params->Values.Num());
 			return true;
 		}
 
-		virtual void AfterExecute(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult) override
+		virtual void AfterExecute(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult) override
 		{
 			UE_LOG(
 				LogUnrealCodex,
 				Verbose,
 				TEXT("[MCP Hook] AfterExecute: %s success=%s message=%s (paramCount=%d)"),
-				*ToolName,
+				*ToolInfo.Name,
 				InOutResult.bSuccess ? TEXT("true") : TEXT("false"),
 				*InOutResult.Message,
 				Params->Values.Num()
 			);
+		}
+	};
+
+	/** Validates required parameters declared by each tool. */
+	class FMCPValidationHook final : public IMCPToolHook
+	{
+	public:
+		virtual bool BeforeExecute(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params, FMCPToolResult& OutResult) override
+		{
+			for (const FMCPToolParameter& ParamDef : ToolInfo.Parameters)
+			{
+				if (ParamDef.bRequired && !Params->HasField(ParamDef.Name))
+				{
+					OutResult = FMCPToolResult::Error(FString::Printf(TEXT("Missing required parameter '%s' for tool '%s'"), *ParamDef.Name, *ToolInfo.Name));
+					return false;
+				}
+			}
+
+			return true;
+		}
+	};
+
+	/**
+	 * Safety hook for destructive tools.
+	 *
+	 * Behavior:
+	 * - If tool is destructive and explicitly supports approval params (confirm/force),
+	 *   require one of them to be true.
+	 * - If tool is destructive but has no approval param, only log a warning (non-breaking).
+	 */
+	class FMCPSafetyHook final : public IMCPToolHook
+	{
+	public:
+		virtual bool BeforeExecute(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params, FMCPToolResult& OutResult) override
+		{
+			if (!ToolInfo.Annotations.bDestructiveHint)
+			{
+				return true;
+			}
+
+			const bool bHasConfirmParam = HasParam(ToolInfo, TEXT("confirm"));
+			const bool bHasForceParam = HasParam(ToolInfo, TEXT("force"));
+			if (!bHasConfirmParam && !bHasForceParam)
+			{
+				UE_LOG(LogUnrealCodex, Warning, TEXT("[MCP Safety] Destructive tool '%s' executed without explicit approval parameter support"), *ToolInfo.Name);
+				return true;
+			}
+
+			const bool bApproved =
+				GetBoolParam(Params, TEXT("confirm")) ||
+				GetBoolParam(Params, TEXT("force")) ||
+				GetBoolParam(Params, TEXT("__approved"));
+
+			if (!bApproved)
+			{
+				OutResult = FMCPToolResult::Error(FString::Printf(
+					TEXT("Tool '%s' is destructive. Re-run with confirm=true (or force=true)."),
+					*ToolInfo.Name
+				));
+				return false;
+			}
+
+			return true;
+		}
+
+	private:
+		static bool HasParam(const FMCPToolInfo& ToolInfo, const FString& ParamName)
+		{
+			for (const FMCPToolParameter& Param : ToolInfo.Parameters)
+			{
+				if (Param.Name.Equals(ParamName, ESearchCase::IgnoreCase))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		static bool GetBoolParam(const TSharedRef<FJsonObject>& Params, const FString& ParamName)
+		{
+			bool bValue = false;
+			return Params->TryGetBoolField(ParamName, bValue) && bValue;
 		}
 	};
 }
@@ -71,6 +153,8 @@ FMCPToolRegistry::FMCPToolRegistry()
 {
 	HookManager = MakeShared<FMCPToolHookManager>();
 	HookManager->RegisterHook(MakeShared<FMCPLoggingHook>());
+	HookManager->RegisterHook(MakeShared<FMCPValidationHook>());
+	HookManager->RegisterHook(MakeShared<FMCPSafetyHook>());
 
 	RegisterBuiltinTools();
 }
@@ -234,11 +318,13 @@ FMCPToolResult FMCPToolRegistry::ExecuteTool(const FString& ToolName, const TSha
 		return FMCPToolResult::Error(FString::Printf(TEXT("Tool '%s' not found"), *ToolName));
 	}
 
+	const FMCPToolInfo ToolInfo = (*FoundTool)->GetInfo();
+
 	// Pre-execution hooks can block execution and return an explicit result.
 	FMCPToolResult Result;
-	if (HookManager.IsValid() && !HookManager->RunBeforeHooks(ToolName, Params, Result))
+	if (HookManager.IsValid() && !HookManager->RunBeforeHooks(ToolInfo, Params, Result))
 	{
-		UE_LOG(LogUnrealCodex, Warning, TEXT("Tool '%s' blocked by pre-execution hook: %s"), *ToolName, *Result.Message);
+		UE_LOG(LogUnrealCodex, Warning, TEXT("Tool '%s' blocked by pre-execution hook: %s"), *ToolInfo.Name, *Result.Message);
 		return Result;
 	}
 
@@ -289,7 +375,7 @@ FMCPToolResult FMCPToolRegistry::ExecuteTool(const FString& ToolName, const TSha
 
 	if (HookManager.IsValid())
 	{
-		HookManager->RunAfterHooks(ToolName, Params, Result);
+		HookManager->RunAfterHooks(ToolInfo, Params, Result);
 	}
 
 	const double DurationMs = (FPlatformTime::Seconds() - StartSeconds) * 1000.0;

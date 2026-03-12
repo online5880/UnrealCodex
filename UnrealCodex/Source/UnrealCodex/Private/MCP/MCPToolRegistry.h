@@ -187,13 +187,13 @@ public:
 	 * Called before a tool executes.
 	 * @return true to continue execution, false to short-circuit with OutResult.
 	 */
-	virtual bool BeforeExecute(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& OutResult)
+	virtual bool BeforeExecute(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params, FMCPToolResult& OutResult)
 	{
 		return true;
 	}
 
 	/** Called after a tool executes (success or failure). */
-	virtual void AfterExecute(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult)
+	virtual void AfterExecute(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult)
 	{
 	}
 };
@@ -212,11 +212,11 @@ public:
 		}
 	}
 
-	bool RunBeforeHooks(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& OutResult) const
+	bool RunBeforeHooks(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params, FMCPToolResult& OutResult) const
 	{
 		for (const TSharedPtr<IMCPToolHook>& Hook : Hooks)
 		{
-			if (Hook.IsValid() && !Hook->BeforeExecute(ToolName, Params, OutResult))
+			if (Hook.IsValid() && !Hook->BeforeExecute(ToolInfo, Params, OutResult))
 			{
 				return false;
 			}
@@ -224,13 +224,13 @@ public:
 		return true;
 	}
 
-	void RunAfterHooks(const FString& ToolName, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult) const
+	void RunAfterHooks(const FMCPToolInfo& ToolInfo, const TSharedRef<FJsonObject>& Params, FMCPToolResult& InOutResult) const
 	{
 		for (const TSharedPtr<IMCPToolHook>& Hook : Hooks)
 		{
 			if (Hook.IsValid())
 			{
-				Hook->AfterExecute(ToolName, Params, InOutResult);
+				Hook->AfterExecute(ToolInfo, Params, InOutResult);
 			}
 		}
 	}
