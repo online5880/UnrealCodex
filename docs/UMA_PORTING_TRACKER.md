@@ -218,8 +218,8 @@
 - [x] `pcg_create_graph.py`
 - [x] `physics_create_asset.py`
 - [x] `physics_create_material.py`
-- [ ] `physics_set_constraint.py`
-- [ ] `physics_set_profile.py`
+- [x] `physics_set_constraint.py`
+- [x] `physics_set_profile.py`
 - [ ] `refactor_rename_chain.py`
 - [ ] `sequencer_export_fbx.py`
 - [ ] `sequencer_import_fbx.py`
