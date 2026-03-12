@@ -192,6 +192,8 @@ namespace
 #include "Tools/MCPTool_PhysicsGetInfo.h"
 #include "Tools/MCPTool_PhysicsCreateAsset.h"
 #include "Tools/MCPTool_PhysicsCreateMaterial.h"
+#include "Tools/MCPTool_PhysicsSetProfile.h"
+#include "Tools/MCPTool_PhysicsSetConstraint.h"
 #include "Tools/MCPTool_SourceControl.h"
 #include "Tools/MCPTool_SourceControlOps.h"
 
@@ -291,6 +293,8 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 	RegisterTool(MakeShared<FMCPTool_PhysicsGetInfo>());
 	RegisterTool(MakeShared<FMCPTool_PhysicsCreateAsset>());
 	RegisterTool(MakeShared<FMCPTool_PhysicsCreateMaterial>());
+	RegisterTool(MakeShared<FMCPTool_PhysicsSetProfile>());
+	RegisterTool(MakeShared<FMCPTool_PhysicsSetConstraint>());
 
 	// Source control tools
 	RegisterTool(MakeShared<FMCPTool_SourceControl>());
