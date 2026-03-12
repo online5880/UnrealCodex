@@ -196,6 +196,7 @@ namespace
 #include "Tools/MCPTool_PhysicsSetConstraint.h"
 #include "Tools/MCPTool_SourceControl.h"
 #include "Tools/MCPTool_SourceControlOps.h"
+#include "Tools/MCPTool_SourceControlUmaAliases.h"
 
 // Task queue tools
 #include "Tools/MCPTool_TaskSubmit.h"
@@ -301,6 +302,9 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 	RegisterTool(MakeShared<FMCPTool_SourceControlStatus>());
 	RegisterTool(MakeShared<FMCPTool_SourceControlCheckout>());
 	RegisterTool(MakeShared<FMCPTool_SourceControlDiff>());
+	RegisterTool(MakeShared<FMCPTool_SourcecontrolStatus>());
+	RegisterTool(MakeShared<FMCPTool_SourcecontrolCheckout>());
+	RegisterTool(MakeShared<FMCPTool_SourcecontrolDiff>());
 
 	// Create and register async task queue tools
 	// Task queue takes a raw pointer since the registry always outlives it

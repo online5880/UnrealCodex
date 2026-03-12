@@ -57,7 +57,7 @@
 | `curve` | 3 | 미이식 | 배치 대상 |
 | `foliage` | 3 | 미이식 | 배치 대상 |
 | `geoscript` | 3 | 미이식 | 배치 대상 |
-| `sourcecontrol` | 3 | 미이식 | 배치 대상 |
+| `sourcecontrol` | 3 | 이식완료 | `source_control_*` + `sourcecontrol_*` 별칭 제공 |
 | `add` | 2 | 미이식 | 배치 대상 |
 | `fix` | 2 | 미이식 | 배치 대상 |
 | `apply` | 1 | 미이식 | 배치 대상 |
@@ -116,7 +116,9 @@
 - [x] `project_snapshot.py` (대응: `project_context` full)
 - [x] `project_structure.py` (대응: `project_context` summary/full)
 - [ ] `sequencer_get_info.py`
-- [x] `sourcecontrol_status.py` (대응: `source_control_status`)
+- [x] `sourcecontrol_status.py` (대응: `source_control_status` + `sourcecontrol_status`)
+- [x] `sourcecontrol_checkout.py` (대응: `source_control_checkout` + `sourcecontrol_checkout`)
+- [x] `sourcecontrol_diff.py` (대응: `source_control_diff` + `sourcecontrol_diff`)
 - [ ] `texture_get_info.py`
 - [ ] `texture_list_textures.py`
 - [ ] `widget_add_element.py`
