@@ -53,6 +53,7 @@ public class UnrealCodex : ModuleRules
 				"GraphEditor",
 				"AssetRegistry",
 				"AssetTools",
+				"SourceControl",
 				// Animation Blueprint manipulation
 				"AnimGraph",
 				"AnimGraphRuntime",
