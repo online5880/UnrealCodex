@@ -246,3 +246,4 @@
 ## 7) 변경 이력
 - 초기 문서 생성
 - project_inspect 확장: `dependencies`, `class_hierarchy` 액션 추가 (project_dependencies.py / project_class_hierarchy.py 대응)
+- 신규 MCP read-only 툴 추가: `pcg_get_info`, `physics_get_info` (pcg_get_info.py / physics_get_info.py 대응)

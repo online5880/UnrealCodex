@@ -185,6 +185,8 @@ namespace
 #include "Tools/MCPTool_OpenLevel.h"
 #include "Tools/MCPTool_ProjectContext.h"
 #include "Tools/MCPTool_ProjectInspect.h"
+#include "Tools/MCPTool_PCGGetInfo.h"
+#include "Tools/MCPTool_PhysicsGetInfo.h"
 #include "Tools/MCPTool_SourceControl.h"
 #include "Tools/MCPTool_SourceControlOps.h"
 
@@ -275,6 +277,10 @@ void FMCPToolRegistry::RegisterBuiltinTools()
 	// Project context tools
 	RegisterTool(MakeShared<FMCPTool_ProjectContext>());
 	RegisterTool(MakeShared<FMCPTool_ProjectInspect>());
+
+	// PCG / Physics inspection tools
+	RegisterTool(MakeShared<FMCPTool_PCGGetInfo>());
+	RegisterTool(MakeShared<FMCPTool_PhysicsGetInfo>());
 
 	// Source control tools
 	RegisterTool(MakeShared<FMCPTool_SourceControl>());
